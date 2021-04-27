@@ -20,7 +20,7 @@ name: test
 description: "Runs unit tests within a neonFORGE repo and uploads the results as a workflow artifact"
 inputs:
   repo:
-    description: "Specifies the repository to be tested, one of: 'neonCLOUD', 'neonKUBE', or 'neonLUBRARY'"
+    description: "Specifies the repository to be tested, one of: 'neonCLOUD', 'neonKUBE', or 'neonLIBRARY'"
     required: true
   results-folder:
     description: "Specifies the folder where test result files will be copied"
@@ -29,7 +29,7 @@ outputs:
   success:
     description: "Returns 'true' when all tests passed (or were skipped) or 'false' when some tests failed"
   result-uris:
-    description: "Returns as the comma separated list of markdown formatted URIs to each test result separated by semicolons"
+    description: "Returns as the comma separated list of markdown formatted URIs to each test result (separated by semicolons)"
 runs:
   using: node12
   main: action.js
