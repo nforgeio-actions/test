@@ -8,138 +8,23 @@
 # formal written and signed agreement with neonFORGE, LLC.
 
 #------------------------------------------------------------------------------
-# Loads the values of important system environment as action outputs.  Here's 
-# the list of variables what we're currently loading:
+# Runs unit tests for the Release configuration within a neonFORGE repo and then
+# uploads the test output as a workflow artifact.
 #
-#   COMPUTERNAME
-#   NF_REPOS
-# 
-#   NF_BUILD
-#   NF_CACHE
-#   NF_CODEDOC
-#   NF_ROOT
-#   NF_SAMPLES_CADENCE
-#   NF_SNIPPETS
-#   NF_TEMP
-#   NF_TEST
-#   NF_TOOLBIN
-# 
-#   NC_ACTIONS_ROOT
-#   NC_BUILD
-#   NC_CACHE
-#   NC_NUGET_DEVFEED
-#   NC_NUGET_VERSIONER
-#   NC_REPOS
-#   NC_ROOT
-#   NC_TEMP
-#   NC_TEST
-#   NC_TOOLBIN
+# NOTE:
 #
-# This action also sets the MASTER_PASSWORD environment variable to the master-password 
-# when passed. The MASTER_PASSWORD environment variable is used by the underlying 
-# Powershell deployment scripts to access the current user's 1Password secrets on headless
-# jobrunner machines. We'll also return outputs for the following 1Password secrets:
-# 
-#   MASTER_PASSWORD
-# 
-#   AWS_ACCESS_KEY_ID
-#   AWS_SECRET_ACCESS_KEY
-#   DOCKER_USERNAME
-#   DOCKER_PASSWORD
-#   GITHUB_USERNAME
-#   GITHUB_PASSWORD
-#   GITHUB_PAT
-#   NEONFORGE_USERNAME
-#   NEONFORGE_PASSWORD
-#   NUGET_PUBLIC_KEY
-#   NUGET_VERSIONER_KEY
-#   NUGET_DEVFEED_KEY
-#   TEAM_DEVOPS_CHANNEL
+# This action is intended to be used after a code build has been performed in
+# the same workflow job.
 
-name: environment
-description: "Loads important JOBRUNNER system environment variables into the current job"
+name: test
+description: "Runs unit tests within a neonFORGE repo and uploads the results as a workflow artifact"
 inputs:
-  master-password:
-    description: "Optionally specifies the master 1Password to override the MASTER_PASSWORD environment variable"
-    required: false
+  test-log-path:
+    description: "Specifies the path where the test output should be written"
+    required: true
 outputs:
-  #-------------------------------------------------------------
-  # Environment variables
-  #-------------------------------------------------------------
-  COMPUTERNAME:
-    description: "Returns the COMPUTERNAME environment variable"
-  NF_REPOS:
-    description: "Returns the NF_REPOS environment variable"
-  NF_BUILD:
-    description: "Returns the NF_BUILD environment variable"
-  NF_CACHE:
-    description: "Returns the NF_CACHE environment variable"
-  NF_CODEDOC:
-    description: "Returns the NF_CODEDOC environment variable"
-  NF_ROOT:
-    description: "Returns the NF_ROOT environment variable"
-  NF_SAMPLES_CADENCE:
-    description: "Returns the NF_SAMPLES_CADENCE environment variable"
-  NF_SNIPPETS:
-    description: "Returns the NF_SNIPPETS environment variable"
-  NF_TEMP:
-    description: "Returns the NF_TEMP environment variable"
-  NF_TEST:
-    description: "Returns the NF_TEST environment variable"
-  NF_TOOLBIN:
-    description: "Returns the NF_TOOLBIN environment variable"
-  NC_ACTIONS_ROOT:
-    description: "Returns the NC_ACTIONS_ROOT environment variable"
-  NC_BUILD:
-    description: "Returns the NC_BUILD environment variable"
-  NC_CACHE:
-    description: "Returns the NC_CACHE environment variable"
-  NC_NUGET_DEVFEED:
-    description: "Returns the NC_NUGET_DEVFEED environment variable"
-  NC_NUGET_VERSIONER:
-    description: "Returns the NC_NUGET_VERSIONER environment variable"
-  NC_REPOS:
-    description: "Returns the NC_REPOS environment variable"
-  NC_ROOT:
-    description: "Returns the NC_ROOT environment variable"
-  NC_TEMP:
-    description: "Returns the NC_TEMP environment variable"
-  NC_TEST:
-    description: "Returns the NC_TEST environment variable"
-  NC_TOOLBIN:
-    description: "Returns the NC_TOOLBIN environment variable"
-  #-------------------------------------------------------------
-  # Secrets
-  #-------------------------------------------------------------
-  MASTER_PASSWORD:
-    description: "Returns the MASTER_PASSWORD secret"
-    value: ${{ inputs.master-password }}
-  AWS_ACCESS_KEY_ID:
-    description: "Returns the AWS_ACCESS_KEY_ID secret"
-  AWS_SECRET_ACCESS_KEY:
-    description: "Returns the AWS_SECRET_ACCESS_KEY secret"
-  DOCKER_USERNAME:
-    description: "Returns the DOCKER_USERNAME secret"
-  DOCKER_PASSWORD:
-    description: "Returns the DOCKER_PASSWORD secret"
-  GITHUB_USERNAME:
-    description: "Returns the GITHUB_USERNAME secret"
-  GITHUB_PASSWORD:
-    description: "Returns the GITHUB_PASSWORD secret"
-  GITHUB_PAT:
-    description: "Returns the GITHUB_PAT secret"
-  NEONFORGE_USERNAME:
-    description: "Returns the NEONFORGE_USERNAME secret"
-  NEONFORGE_PASSWORD:
-    description: "Returns the NEONFORGE_PASSWORD secret"
-  NUGET_PUBLIC_KEY:
-    description: "Returns the NUGET_PUBLIC_KEY secret"
-  NUGET_VERSIONER_KEY:
-    description: "Returns the NUGET_VERSIONER_KEY secret"
-  NUGET_DEVFEED_KEY:
-    description: "Returns the NUGET_DEVFEED_KEY secret"
-  TEAM_DEVOPS_CHANNEL:
-    description: "Returns the TEAM_DEVOPS_CHANNEL secret"
+  success:
+    description: "Returns 'true' when all tests passed (or were skipped) or 'false' when some tests failed"
 runs:
   using: node12
   main: action.js
