@@ -136,6 +136,18 @@ try
         }
     }
 
+    # Delete all of the project test results folders.
+
+    ForEach ($projectFolder in $testProjectFolders)
+    {
+        $projectResultFolder = [System.IO.Path]::Combine($projectFolder, "TestResults")
+
+        if ([System.IO.Directory]::Exists($projectResultFolder))
+        {
+            [System.IO.Directory]::Delete($projectResultFolder, $true)
+        }
+    }
+
     # Run the tests.
 
     dotnet test $solutionPath --logger "liquid.md"
