@@ -232,6 +232,10 @@ try
             }
         }
 
+        # Ensure that the [results] folder exists in the [test-results] repo.
+
+        [System.IO.Directory]::CreateDirectory($resultsFolder)
+
         # Copy the project test results into the results] folder in the [test-results] repo,
         # renaming the files to be like: 
         #
