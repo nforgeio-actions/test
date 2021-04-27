@@ -138,7 +138,7 @@ try
 
     # Run the tests.
 
-    dotnet test $solutionPath --logger "liquid.md;File=$testLogPath"
+    dotnet test $solutionPath --logger "liquid.md"
     $success = $?
 
     # Copy all of the test results from the folders where they were
@@ -176,6 +176,7 @@ try
 }
 catch
 {
+    Write-ActionException $_
     Set-ActionOutput "success" "false"
     return
 }
