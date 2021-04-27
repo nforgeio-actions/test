@@ -231,11 +231,11 @@ try
             $filename   = [System.IO.Path]::GetFileName($testResultPath)
             $timestring = $filename.SubString(0, 20)        # Extract the "yyyy-MM-ddThh_mm_ssZ" part
             $timeString = $timeString.Replace("_", ":")     # Convert to: "yyyy-MM-ddThh:mm:ssZ"
-            $timestamp  = [System.DateTime]::ParseExact($timeString, "o", $([System.Globalization.CultureInfo]::InvariantCulture)).ToUniversalTime()
+            $timestamp  = [System.DateTime]::ParseExact($timeString, "yyyy-MM-ddThh:mm:ssZ", $([System.Globalization.CultureInfo]::InvariantCulture)).ToUniversalTime()
 
             if ($timestamp -lt $minRetainTime)
             {
-                Write-ActionOutput "*** delete expired: $targetPath"
+                Write-ActionOutput "*** expired: $targetPath"
                 [System.IO.File]::Delete($testResultPath)
             }
         }
@@ -245,7 +245,7 @@ try
         #
         #       yyyy-MM-ddThh_mm_ssZ-NAME.md
         #
-        # Note that we're using underscores here because colons aren't allowed un URLs
+        # Note that we're using underscores here because colons aren't allowed in URLs
         # without being escaped and Windows doesn't allow them in file names.
 
         $timestamp = $utcNow.ToString("yyyy-MM-ddThh_mm_ssZ")
