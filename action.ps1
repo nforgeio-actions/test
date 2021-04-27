@@ -250,7 +250,7 @@ try
 
         $timestamp = $utcNow.ToString("yyyy-MM-ddThh_mm_ssZ")
 
-        ForEach ($testResultPath in [System.IO.Directory]::GetFiles($testResultsRepoFolder, "*.md"))
+        ForEach ($testResultPath in [System.IO.Directory]::GetFiles($resultsFolder, "*.md"))
         {
             $projectName = [System.IO.Path]::GetFileName($testResultPath)
             $targetPath  = [System.IO.path]::Combine($testResultsFolder, "$timestamp-$projectName.md")
