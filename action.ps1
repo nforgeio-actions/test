@@ -23,11 +23,7 @@
 #       https://github.com/kurtmkurtm/LiquidTestReports
 
 $ncRoot = $env:NC_ROOT
-
-if ([System.String]::IsNullOrEmpty($ncRoot) -or ![System.IO.Directory]::Exists($ncRoot))
-{
-    throw "Runner Config: neonCLOUD repo is not present."
-}
+$ntRoot = $env:NT_ROOT
 
 $ncPowershell = [System.IO.Path]::Combine($ncRoot, "Powershell")
 
@@ -46,6 +42,11 @@ $resultsFolder = Get-ActionInput "results-folder" $true
 
 try
 {
+    if ([System.String]::IsNullOrEmpty($ncRoot) -or ![System.IO.Directory]::Exists($ncRoot))
+    {
+        throw "Runner Config: neonCLOUD repo is not present."
+    }
+
     # Delete any existing test results folder and then create a fresh folder.
       
     if ([System.IO.File]::Exists($resultsFolder))
@@ -186,8 +187,8 @@ try
     # We're using the [nforgeio/test-results] repo to hold the test results so
     # we can include result links in notifications.  The nice thing about using
     # a GitHub repo for this is that GitHub will handle the markdown translation
-    # automatically.  Test results are persisted to the [$/reults] folder and
-    # will be named like:
+    # automatically and GitHub also handles security.  Test results are persisted
+    # to the [$/reults] folder and will be named like:
     # 
     #       yyyy-MM-ddThh_mm_ssZ-NAME.md
     #
@@ -197,23 +198,22 @@ try
     # value from [$/setting-retention-days] to keep a lid on the number of 
     # files that need to be pulled (note that the history will keep growing).
 
-    $testRepoPath      = $env:TR_ROOT
-    $testResultsFolder = [System.IO.Path]::Combine($testRepoPath, "results")
+    $testResultsFolder = [System.IO.Path]::Combine($ntRoot, "results")
 
-    if ([System.String]::IsNullOrEmpty($testRepoPath) -or ![System.IO.Directory]::Exists($testRepoPath))
+    if ([System.String]::IsNullOrEmpty($ntRoot) -or ![System.IO.Directory]::Exists($ntRoot))
     {
         throw "[test-results] repo is not configured locally."
     }
 
-    Push-Location $testRepoPath
+    Push-Location $ntRoot
 
         # Pull the [test-results] repo and then scan the test results file and remove
-        # those with timestamps older than [$/settings-retention-days].
+        # those with timestamps older than [$/setting-retention-days].
 
         git pull
         ThrowOnExitCode
 
-        $retentionDaysPath = [System.IO.Path]::Combine($testRepoPath, "settings-retention-days")
+        $retentionDaysPath = [System.IO.Path]::Combine($ntRoot, "setting-retention-days")
         $retentionDays     = [int][System.IO.File]::ReadAllText($retentionDaysPath).Trim()
         $utcNow            = [System.DateTime]::UtcNow
         $minRetainTime     = $utcNow.Date - $retentionDays
@@ -280,7 +280,7 @@ catch
 {
     Write-ActionException $_
     Set-ActionOutput "success" "false"
-    return
+    exit 1
 }
 
 Set-ActionOutput "success" $success
