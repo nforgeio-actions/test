@@ -235,7 +235,7 @@ try
 
             if ($timestamp -lt $minRetainTime)
             {
-                Write-ActionOutput "*** expired: $targetPath"
+                Write-ActionOutput "*** expired: $testResultPath"
                 [System.IO.File]::Delete($testResultPath)
             }
         }
@@ -250,7 +250,7 @@ try
 
         $timestamp = $utcNow.ToString("yyyy-MM-ddThh_mm_ssZ")
 
-        ForEach ($testResultPath in [System.IO.Directory]::GetFiles("$resultsFolder/*.md"))
+        ForEach ($testResultPath in [System.IO.Directory]::GetFiles($testResultsRepoFolder, "*.md"))
         {
             $projectName = [System.IO.Path]::GetFileName($testResultPath)
             $targetPath  = [System.IO.path]::Combine($testResultsFolder, "$timestamp-$projectName.md")
