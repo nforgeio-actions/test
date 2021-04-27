@@ -58,8 +58,8 @@ try
     # Determine the solution path for the repo as well as the paths to
     # test project folders.
     
-    # NOTE: These lists will need to be manually maintained as test
-    #       projects are added or deleted.
+    # NOTE: These lists will need to be manually maintained as
+    #       test projects are added or deleted.
     
     $testProjectFolders = @()
 
@@ -154,8 +154,9 @@ try
     $success = $?
 
     # Copy all of the test results from the folders where they were
-    # generated to the results folder passed to the action.  Note that
-    # we're going to rename each file to: PROJECT-NAME.md.
+    # generated to the results folder passed to the action.  There should
+    # only be one results file in eachn directory and we're going to 
+    # rename each file to: PROJECT-NAME.md.
 
     function RenameAndCopy
     {
@@ -165,11 +166,16 @@ try
             [string]$projectFolder
         )
 
-        $projectName    = [System.IO.Path]::GetFileName($projectFolder)
-        $resultsPattern = [System.IO.Path]::Combine($projectFolder, "TestResults", "*.md")
+        $projectName          = [System.IO.Path]::GetFileName($projectFolder)
+        $projectResultsFolder = [System.IO.Path]::Combine($projectFolder, "TestResults")
+        $projectResultFiles   = [System.IO.Directory]::GetFiles($projectResultsFolder, "*.md")
+        
+        if ($projectResultFiles.Count -eq 0)
+        {
+            return  # No results for this test project
+        }
 
-        dir "$projectFolder\TestResults\" | rename-item -NewName {$_.name -replace "*.md","$projectName.md"}
-        Copy-Item -Path $resultsPattern -Destination $resultsFolder
+        Copy-Item -Path $projectResultFiles[0] -Destination $([System.IO.Path]::Combine($resultsFolder, "$projectName.md"))
     }
 
     ForEach ($projectFolder in $testProjectFolders)
