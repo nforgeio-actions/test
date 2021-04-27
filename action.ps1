@@ -189,9 +189,9 @@ try
     # automatically.  Test results are persisted to the [$/reults] folder and
     # will be named like:
     # 
-    #       YYYY-MM-DD-HH-MM-SS-NAME.md
+    #       yyyy-MM-ddThh:mm:ssZ-NAME.md
     #
-    # where NAME identifies the test project that generated the result.
+    # where NAME identifies the test project that generated the result file.
     #
     # We're also going to remove files with timestamps older than the integer
     # value from [$/setting-retention-days] to keep a lid on the number of 
@@ -233,7 +233,9 @@ try
         }
 
         # Copy the project test results into the results] folder in the [test-results] repo,
-        # renaming the files to be like: yyyy-MM-ddThh:mm:ssZ-NAME.md
+        # renaming the files to be like: 
+        #
+        #       yyyy-MM-ddThh:mm:ssZ-NAME.md
 
         $timestamp = $utcNow.ToString("o")
 
