@@ -247,15 +247,28 @@ try
         #
         # Note that we're using underscores here because colons aren't allowed in URLs
         # without being escaped and Windows doesn't allow them in file names.
+        #
+        # We're also going to create the semicolon separated list of markdown formatted
+        # test result URIs for the [result-uris] output.
 
-        $timestamp = $utcNow.ToString("yyyy-MM-ddThh_mm_ssZ")
+        $timestamp  = $utcNow.ToString("yyyy-MM-ddThh_mm_ssZ")
+        $resultUris = ""
 
         ForEach ($testResultPath in [System.IO.Directory]::GetFiles($resultsFolder, "*.md"))
         {
-            $projectName = [System.IO.Path]::GetFileName($testResultPath)
+            $projectName = [System.IO.Path]::GetFileNameWithoutExtension($testResultPath)
             $targetPath  = [System.IO.path]::Combine($testResultsFolder, "$timestamp-$projectName.md")
 
             Copy-Item -Path $testResultPath -Destination $targetPath
+
+            # Append the next test result URI.
+
+            if (![System.String]::IsNullOrEmpty($resultUris))
+            {
+                $resultUris += ";" 
+            }
+
+            $resultUris += "[$projectName](https://github.com/nforgeio/test-results/blob/master/results/$timestamp-$projectName.md)"
         }
 
         # Commit and push the [test-results] repo changes.
@@ -272,6 +285,8 @@ try
     Pop-Location
 
     # Set the output values.
+
+    Set-ActionOutput "result-uris" $resultUris
 
     if ($success)
     {
