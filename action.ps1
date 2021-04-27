@@ -143,7 +143,7 @@ try
 
     # Copy all of the test results from the folders where they were
     # generated to the results folder passed to the action.  Note that
-    # we're going to rename each file to PROJECT-NAME.md.
+    # we're going to rename each file to: PROJECT-NAME.md.
 
     function RenameAndCopy
     {
