@@ -25,6 +25,11 @@
 $ncRoot = $env:NC_ROOT
 $ntRoot = $env:NT_ROOT
 
+if ([System.String]::IsNullOrEmpty($ncRoot) -or ![System.IO.Directory]::Exists($ncRoot))
+{
+    throw "Runner Config: neonCLOUD repo is not present."
+}
+
 $ncPowershell = [System.IO.Path]::Combine($ncRoot, "Powershell")
 
 Push-Location $ncPowershell
