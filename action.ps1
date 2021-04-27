@@ -231,10 +231,11 @@ try
             $filename   = [System.IO.Path]::GetFileName($testResultPath)
             $timestring = $filename.SubString(0, 20)        # Extract the "yyyy-MM-ddThh_mm_ssZ" part
             $timeString = $timeString.Replace("_", ":")     # Convert to: "yyyy-MM-ddThh:mm:ssZ"
-            $timestamp  = [System.DateTime]::Parse($timeString, "o").ToUniversalTime()
+            $timestamp  = [System.DateTime]::ParseExact($timeString, "o", $([System.Globalization.CultureInfo]::InvariantCulture)).ToUniversalTime()
 
             if ($timestamp -lt $minRetainTime)
             {
+                Write-ActionOutput "*** delete expired: $targetPath"
                 [System.IO.File]::Delete($testResultPath)
             }
         }
@@ -254,7 +255,6 @@ try
             $projectName = [System.IO.Path]::GetFileName($testResultPath)
             $targetPath  = [System.IO.path]::Combine($testResultsFolder, "$timestamp-$projectName.md")
 
-            Write-ActionOutput "*** delete expired result: $targetPath"
             Copy-Item -Path $testResultPath -Destination $targetPath
         }
 
