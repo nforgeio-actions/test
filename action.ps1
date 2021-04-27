@@ -224,6 +224,10 @@ try
         $utcNow            = [System.DateTime]::UtcNow
         $minRetainTime     = $utcNow.Date - $(New-TimeSpan -Days $retentionDays)
 
+        Write-ActionOutput "****************************************************************"
+        Write-ActionOutput "testResultsRepoFolder: $testResultsRepoFolder"
+        Write-ActionOutput "****************************************************************"
+
         ForEach ($testResultPath in [System.IO.Directory]::GetFiles("$testResultsRepoFolder\*.md"))
         {
             # Extract and parse the timestamp.
@@ -254,6 +258,7 @@ try
             $projectName = [System.IO.Path]::GetFileName($testResultPath)
             $targetPath  = [System.IO.path]::Combine($testResultsFolder, "$timestamp-$projectName.md")
 
+            Write-ActionOutput "*** delete expired result: $targetPath"
             Copy-Item -Path $testResultPath -Destination $targetPath
         }
 
