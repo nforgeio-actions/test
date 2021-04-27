@@ -42,7 +42,7 @@ Pop-Location
 
 # Read the inputs.
 
-$repo          = Get-ActionInput "repo" $true
+$repo          = Get-ActionInput "repo"           $true
 $resultsFolder = Get-ActionInput "results-folder" $true
 
 try
@@ -84,7 +84,6 @@ try
             $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Cloud.Desktop")
             $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Enterprise.Kube")
             $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.nuget-versioner")
-            Break
         }
           
         "neonKUBE"
@@ -114,31 +113,26 @@ try
             $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.NeonCli")
             $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.RestApi")
             $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test_Identity")
-            Break
         }
           
         "neonLIBRARY"
         {
             throw "[neonLIBRARY] build is not implemented."
-            Break
         }
           
         "cadence-samples"
         {
             throw "[cadence-samples] build is not implemented."
-            Break
         }
           
         "temporal-samples"
         {
             throw "[temporal-samples] build is not implemented."
-            Break
         }
           
         default
         {
             throw "[$repo] is not a supported repo."
-            Break
         }
     }
 
