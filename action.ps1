@@ -224,7 +224,7 @@ try
         $utcNow            = [System.DateTime]::UtcNow
         $minRetainTime     = $utcNow.Date - $(New-TimeSpan -Days $retentionDays)
 
-        ForEach ($testResultPath in [System.IO.Directory]::GetFiles("$testResultsRepoFolder/*.md"))
+        ForEach ($testResultPath in [System.IO.Directory]::GetFiles("$testResultsRepoFolder\*.md"))
         {
             # Extract and parse the timestamp.
 
@@ -239,7 +239,7 @@ try
             }
         }
 
-        # Copy the project test results into the results] folder in the [test-results] repo,
+        # Copy the project test results into the [results] folder in the [test-results] repo,
         # renaming the files to be like: 
         #
         #       yyyy-MM-ddThh_mm_ssZ-NAME.md
