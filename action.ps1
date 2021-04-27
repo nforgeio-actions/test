@@ -224,11 +224,7 @@ try
         $utcNow            = [System.DateTime]::UtcNow
         $minRetainTime     = $utcNow.Date - $(New-TimeSpan -Days $retentionDays)
 
-        Write-ActionOutput "****************************************************************"
-        Write-ActionOutput "testResultsRepoFolder: [$testResultsRepoFolder]"
-        Write-ActionOutput "****************************************************************"
-
-        ForEach ($testResultPath in [System.IO.Directory]::GetFiles("$testResultsRepoFolder\*.md"))
+        ForEach ($testResultPath in [System.IO.Directory]::GetFiles($testResultsRepoFolder, "*.md"))
         {
             # Extract and parse the timestamp.
 
