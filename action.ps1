@@ -189,7 +189,7 @@ try
     # automatically.  Test results are persisted to the [$/reults] folder and
     # will be named like:
     # 
-    #       yyyy-MM-ddThh:mm:ssZ-NAME.md
+    #       yyyy-MM-ddThh_mm_ssZ-NAME.md
     #
     # where NAME identifies the test project that generated the result file.
     #
@@ -223,8 +223,9 @@ try
             # Extract and parse the timestamp.
 
             $filename   = [System.IO.Path]::GetFileName($testResultPath)
-            $timestring = $filename.SubString(0, 20)    # Extract the "yyyy-MM-ddThh:mm:ssZ" part
-            $timestamp  = [System.DateTime]::Parse("o").ToUniversalTime()
+            $timestring = $filename.SubString(0, 20)        # Extract the "yyyy-MM-ddThh_mm_ssZ" part
+            $timeString = $timeString.Replace("_", ":")     # Convert to: "yyyy-MM-ddThh:mm:ssZ"
+            $timestamp  = [System.DateTime]::Parse($timeString, "o").ToUniversalTime()
 
             if ($timestamp -lt $minRetainTime)
             {
@@ -239,9 +240,9 @@ try
         # Copy the project test results into the results] folder in the [test-results] repo,
         # renaming the files to be like: 
         #
-        #       yyyy-MM-ddThh:mm:ssZ-NAME.md
+        #       yyyy-MM-ddThh_mm_ssZ-NAME.md
 
-        $timestamp = $utcNow.ToString("o")
+        $timestamp = $utcNow.ToString("yyyy-MM-ddThh_mm_ssZ")
 
         ForEach ($testResultPath in [System.IO.Directory]::GetFiles("$resultsFolder/*.md"))
         {
