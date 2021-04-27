@@ -207,6 +207,12 @@ try
 
     Push-Location $ntRoot
 
+        # Ensure that the [results] folder exists in the [test-results] repo.
+
+        $testResultsRepoFolder = [System.IO.Path]::Combine($ntRoot, "results")
+
+        [System.IO.Directory]::CreateDirectory($testResultsRepoFolder)
+
         # Pull the [test-results] repo and then scan the test results file and remove
         # those with timestamps older than [$/setting-retention-days].
 
@@ -218,7 +224,7 @@ try
         $utcNow            = [System.DateTime]::UtcNow
         $minRetainTime     = $utcNow.Date - $(New-TimeSpan -Days $retentionDays)
 
-        ForEach ($testResultPath in [System.IO.Directory]::GetFiles("$testResultsFolder/*.md"))
+        ForEach ($testResultPath in [System.IO.Directory]::GetFiles("$testResultsRepoFolder/*.md"))
         {
             # Extract and parse the timestamp.
 
@@ -233,14 +239,13 @@ try
             }
         }
 
-        # Ensure that the [results] folder exists in the [test-results] repo.
-
-        [System.IO.Directory]::CreateDirectory($resultsFolder)
-
         # Copy the project test results into the results] folder in the [test-results] repo,
         # renaming the files to be like: 
         #
         #       yyyy-MM-ddThh_mm_ssZ-NAME.md
+        #
+        # Note that we're using underscores here because colons aren't allowed un URLs
+        # without being escaped and Windows doesn't allow them in file names.
 
         $timestamp = $utcNow.ToString("yyyy-MM-ddThh_mm_ssZ")
 
