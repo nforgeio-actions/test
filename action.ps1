@@ -225,7 +225,7 @@ try
         $minRetainTime     = $utcNow.Date - $(New-TimeSpan -Days $retentionDays)
 
         Write-ActionOutput "****************************************************************"
-        Write-ActionOutput "testResultsRepoFolder: $testResultsRepoFolder"
+        Write-ActionOutput "testResultsRepoFolder: [$testResultsRepoFolder]"
         Write-ActionOutput "****************************************************************"
 
         ForEach ($testResultPath in [System.IO.Directory]::GetFiles("$testResultsRepoFolder\*.md"))
