@@ -263,7 +263,7 @@ try
         git add --all
         ThrowOnExitCode
 
-        git commit --all --message "test[$repo]: " + $utcNow.ToString("o")
+        git commit --all --message "test[$repo]: $timestamp"
         ThrowOnExitCode
 
         git push
@@ -271,7 +271,7 @@ try
 
     Pop-Location
 
-    # Set the other return values.
+    # Set the output values.
 
     if ($success)
     {
