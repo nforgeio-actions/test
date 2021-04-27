@@ -216,7 +216,7 @@ try
         $retentionDaysPath = [System.IO.Path]::Combine($ntRoot, "setting-retention-days")
         $retentionDays     = [int][System.IO.File]::ReadAllText($retentionDaysPath).Trim()
         $utcNow            = [System.DateTime]::UtcNow
-        $minRetainTime     = $utcNow.Date - $retentionDays
+        $minRetainTime     = $utcNow.Date - New-TimeSpan -Days $retentionDays
 
         ForEach ($testResultPath in [System.IO.Directory]::GetFiles("$testResultsFolder/*.md"))
         {
