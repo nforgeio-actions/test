@@ -136,7 +136,7 @@ try
         }
     }
 
-    # Delete all of the project test results folders.
+    # Delete all of the project test result folders.
 
     ForEach ($projectFolder in $testProjectFolders)
     {
@@ -148,7 +148,7 @@ try
         }
     }
 
-    # Run the tests.
+    # Run the solution tests.
 
     dotnet test $solutionPath --logger "liquid.md"
     $success = $?
