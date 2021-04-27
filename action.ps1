@@ -165,11 +165,11 @@ try
             [string]$projectFolder
         )
 
-        $projectName        = [System.IO.Path]::GetFileName($projectFolder)
-        $resultsFilePattern = [System.IO.Path]::Combine($projectFolder, "TestResults", "*.md")
+        $projectName    = [System.IO.Path]::GetFileName($projectFolder)
+        $resultsPattern = [System.IO.Path]::Combine($projectFolder, "TestResults", "*.md")
 
-        dir "$projectFolder\" | rename-item -NewName {$_.name -replace "*.md","$projectName.md"}
-        Copy-Item -Path $resultsFilePattern -Destination $resultsFolder
+        dir "$projectFolder\TestResults\" | rename-item -NewName {$_.name -replace "*.md","$projectName.md"}
+        Copy-Item -Path $resultsPattern -Destination $resultsFolder
     }
 
     ForEach ($projectFolder in $testProjectFolders)
