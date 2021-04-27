@@ -183,6 +183,83 @@ try
         RenameAndCopy $projectFolder
     }
 
+    # We're using the [nforgeio/test-results] repo to hold the test results so
+    # we can include result links in notifications.  The nice thing about using
+    # a GitHub repo for this is that GitHub will handle the markdown translation
+    # automatically.  Test results are persisted to the [$/reults] folder and
+    # will be named like:
+    # 
+    #       YYYY-MM-DD-HH-MM-SS-NAME.md
+    #
+    # where NAME identifies the test project that generated the result.
+    #
+    # We're also going to remove files with timestamps older than the integer
+    # value from [$/setting-retention-days] to keep a lid on the number of 
+    # files that need to be pulled (note that the history will keep growing).
+
+    $testRepoPath      = $env:TR_ROOT
+    $testResultsFolder = [System.IO.Path]::Combine($testRepoPath, "results")
+
+    if ([System.String]::IsNullOrEmpty($testRepoPath) -or ![System.IO.Directory]::Exists($testRepoPath))
+    {
+        throw "[test-results] repo is not configured locally."
+    }
+
+    Push-Location $testRepoPath
+
+        # Pull the [test-results] repo and then scan the test results file and remove
+        # those with timestamps older than [$/settings-retention-days].
+
+        git pull
+        ThrowOnExitCode
+
+        $retentionDaysPath = [System.IO.Path]::Combine($testRepoPath, "settings-retention-days")
+        $retentionDays     = [int][System.IO.File]::ReadAllText($retentionDaysPath).Trim()
+        $utcNow            = [System.DateTime]::UtcNow
+        $minRetainTime     = $utcNow.Date - $retentionDays
+
+        ForEach ($testResultPath in [System.IO.Directory]::GetFiles("$testResultsFolder/*.md"))
+        {
+            # Extract and parse the timestamp.
+
+            $filename   = [System.IO.Path]::GetFileName($testResultPath)
+            $timestring = $filename.SubString(0, 20)    # Extract the "yyyy-MM-ddThh:mm:ssZ" part
+            $timestamp  = [System.DateTime]::Parse("o").ToUniversalTime()
+
+            if ($timestamp -lt $minRetainTime)
+            {
+                [System.IO.File]::Delete($testResultPath)
+            }
+        }
+
+        # Copy the project test results into the results] folder in the [test-results] repo,
+        # renaming the files to be like: yyyy-MM-ddThh:mm:ssZ-NAME.md
+
+        $timestamp = $utcNow.ToString("o")
+
+        ForEach ($testResultPath in [System.IO.Directory]::GetFiles("$resultsFolder/*.md"))
+        {
+            $projectName = [System.IO.Path]::GetFileName($testResultPath)
+            $targetPath  = [System.IO.path]::Combine($testResultsFolder, "$timestamp-$projectName.md")
+
+            Copy-Item -Path $testResultPath -Destination $targetPath
+        }
+
+        # Commit and push the [test-results] repo changes.
+
+        git add --all
+        ThrowOnExitCode
+
+        git commit --all --message "test[$repo]: " + $utcNow.ToString("o")
+        ThrowOnExitCode
+
+        git push
+        ThrowOnExitCode
+
+    Pop-Location
+
+    # Set the other return values.
+
     if ($success)
     {
         Set-ActionOutput "success" "true"
