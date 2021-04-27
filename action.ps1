@@ -41,19 +41,27 @@ Pop-Location
 
 # Read the inputs.
 
-$repo        = Get-ActionInput "repo"
-$testLogPath = Get-ActionInput "test-log-path" $true
+$repo          = Get-ActionInput "repo" $true
+$resultsFolder = Get-ActionInput "results-folder" $true
 
 try
 {
-    # Delete any existing test log file.
+    # Delete any existing test results folder and then create a fresh folder.
       
-    if ([System.IO.File]::Exists($testLogPath))
+    if ([System.IO.File]::Exists($resultsFolder))
     {
-        [System.IO.File]::Delete($testLogPath)
+        [System.IO.File]::Delete($resultsFolder)
     }
 
-    # Determine the solution path for the repo.
+    [System.IO.Directory]::CreateDirectory($resultsFolder)
+
+    # Determine the solution path for the repo as well as the paths to
+    # test project folders.
+    
+    # NOTE: These lists will need to be manually maintained as test
+    #       projects are added or deleted.
+    
+    $testProjectFolders = @()
 
     Switch ($repo)
     {
@@ -65,12 +73,41 @@ try
         "neonCLOUD"
         {
             $solutionPath = [System.IO.Path]::Combine($env:NC_ROOT, "neonCLOUD.sln")
+            $testRoot     = [System.IO.Path]::Combine($env:NC_ROOT, "Test")
+
+            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Cloud.Desktop")
+            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Enterprise.Kube")
+            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.nuget-versioner")
             Break
         }
           
         "neonKUBE"
         {
             $solutionPath = [System.IO.Path]::Combine($env:NF_ROOT, "neonKUBE.sln")
+            $testRoot     = [System.IO.Path]::Combine($env:NF_ROOT, "Test")
+
+            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Cadence")
+            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Cadence.net")
+            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Cassandra")
+            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Common")
+            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Common.net")
+            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Couchbase")
+            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Cryptography")
+            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Cryptography.net")
+            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Deployment")
+            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Kube")
+            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.ModelGen")
+            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.ModelGenCli")
+            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Postgres")
+            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Service")
+            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Temporal")
+            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Temporal.net")
+            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Web")
+            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Xunit")
+            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.YugaByte")
+            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.NeonCli")
+            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.RestApi")
+            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test_Identity")
             Break
         }
           
@@ -104,7 +141,29 @@ try
     dotnet test $solutionPath --logger "liquid.md;File=$testLogPath"
     $success = $?
 
-    # Set the outputs.
+    # Copy all of the test results from the folders where they were
+    # generated to the results folder passed to the action.  Note that
+    # we're going to rename each file to PROJECT-NAME.md.
+
+    function RenameAndCopy
+    {
+        [CmdletBinding()]
+        param (
+            [Parameter(Position=0, Mandatory=$true)]
+            [string]$projectFolder
+        )
+
+        $projectName        = [System.IO.Path]::GetFileName($projectFolder)
+        $resultsFilePattern = [System.IO.Path]::Combine($projectFolder, "TestResults", "*.md")
+
+        dir "$projectFolder\" | rename-item -NewName {$_.name -replace "*.md","$projectName.md"}
+        Copy-Item -Path $resultsFilePattern -Destination $resultsFolder
+    }
+
+    ForEach ($projectFolder in $testProjectFolders)
+    {
+        RenameAndCopy $projectFolder
+    }
 
     if ($success)
     {
@@ -121,4 +180,4 @@ catch
     return
 }
 
-Set-ActionOutput "success" "true"
+Set-ActionOutput "success" $success

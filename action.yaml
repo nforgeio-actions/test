@@ -22,8 +22,8 @@ inputs:
   repo:
     description: "Specifies the repository to be tested, one of: 'neonCLOUD', 'neonKUBE', or 'neonLUBRARY'"
     required: true
-  test-log-path:
-    description: "Specifies the path where the test output should be written"
+  results-folder:
+    description: "Specifies the folder where test result files will be copied"
     required: true
 outputs:
   success:
