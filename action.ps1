@@ -117,4 +117,8 @@ try
 }
 catch
 {
+    Set-ActionOutput "success" "false"
+    return
 }
+
+Set-ActionOutput "success" "true"
