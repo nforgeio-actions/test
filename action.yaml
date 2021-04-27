@@ -19,6 +19,9 @@
 name: test
 description: "Runs unit tests within a neonFORGE repo and uploads the results as a workflow artifact"
 inputs:
+  repo:
+    description: "Specifies the repository to be tested, one of: 'neonCLOUD', 'neonKUBE', or 'neonLUBRARY'"
+    required: true
   test-log-path:
     description: "Specifies the path where the test output should be written"
     required: true

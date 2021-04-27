@@ -39,16 +39,82 @@ Pop-Location
 # performed for the Release configuration via a previous [nforgeio-actions/build] 
 # action step.
 
+# Read the inputs.
+
+$repo        = Get-ActionInput "repo"
 $testLogPath = Get-ActionInput "test-log-path" $true
 
-dotnet test --logger "liquid.md;File=$testLogPath"
-$success = $?
+try
+{
+    # Delete any existing test log file.
+      
+    if ([System.IO.File]::Exists($testLogPath))
+    {
+        [System.IO.File]::Delete($testLogPath)
+    }
 
-if ($success)
-{
-    Set-ActionOutput "success" "true"
+    # Determine the solution path for the repo.
+
+    Switch ($repo)
+    {
+        ""
+        {
+            throw "[inputs.repo] is required."
+        }
+          
+        "neonCLOUD"
+        {
+            $solutionPath = [System.IO.Path]::Combine($env:NC_ROOT, "neonCLOUD.sln")
+            Break
+        }
+          
+        "neonKUBE"
+        {
+            $solutionPath = [System.IO.Path]::Combine($env:NF_ROOT, "neonKUBE.sln")
+            Break
+        }
+          
+        "neonLIBRARY"
+        {
+            throw "[neonLIBRARY] build is not implemented."
+            Break
+        }
+          
+        "cadence-samples"
+        {
+            throw "[cadence-samples] build is not implemented."
+            Break
+        }
+          
+        "temporal-samples"
+        {
+            throw "[temporal-samples] build is not implemented."
+            Break
+        }
+          
+        default
+        {
+            throw "[$repo] is not a supported repo."
+            Break
+        }
+    }
+
+    # Run the tests.
+
+    dotnet test $solutionPath --logger "liquid.md;File=$testLogPath"
+    $success = $?
+
+    # Set the outputs.
+
+    if ($success)
+    {
+        Set-ActionOutput "success" "true"
+    }
+    else
+    {
+        Set-ActionOutput "success" "false"
+    }
 }
-else
+catch
 {
-    Set-ActionOutput "success" "false"
 }
