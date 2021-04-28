@@ -29,7 +29,7 @@ outputs:
   success:
     description: "Returns 'true' when all tests passed (or were skipped) or 'false' when some tests failed"
   result-uris:
-    description: "Returns as the comma separated list of markdown formatted URIs to each test result (separated by semicolons)"
+    description: "Returns as the semicolon separated list of markdown formatted URIs to each test result"
 runs:
   using: node12
   main: action.js
