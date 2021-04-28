@@ -307,6 +307,11 @@ try
 
             ForEach ($line in [System.IO.File]::ReadAllLines($testResultPath))
             {
+                if ([System.String].IsNullOrEmpty($line))
+                {
+                    Continue
+                }
+
                 if ($line.Contains("Passed </td>"))
                 {
                     $totalTests++
