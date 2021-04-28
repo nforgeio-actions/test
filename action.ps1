@@ -239,6 +239,18 @@ try
             }
         }
 
+        # List the files in the results folder and created an array with the sorted file paths.
+        # We're sorting here so the [nforgeio-actions/teams-notify-test] action won't have to.
+
+        $sortedResultPaths = @()
+
+        ForEach ($testResultPath in [System.IO.Directory]::GetFiles($resultsFolder, "*.md"))
+        {
+            $sortedResultPaths += $testResultPath
+        }
+
+        $sortedResultPaths = $($sortedResultPaths | Sort-Object)
+
         # Copy the project test results into the [results] folder in the [test-results] repo,
         # renaming the files to be like: 
         #
@@ -248,12 +260,14 @@ try
         # without being escaped and Windows doesn't allow them in file names.
         #
         # We're also going to create the semicolon separated list of markdown formatted
-        # test result URIs for the [result-uris] output.
+        # test result URIs for the [result-uris] output along with the matching String
+        # with test result summaries for the [result-summaries] output.
 
-        $timestamp  = $utcNow.ToString("yyyy-MM-ddThh_mm_ssZ")
-        $resultUris = ""
+        $timestamp       = $utcNow.ToString("yyyy-MM-ddThh_mm_ssZ")
+        $resultUris      = ""
+        $resultSummaries = ""
 
-        ForEach ($testResultPath in [System.IO.Directory]::GetFiles($resultsFolder, "*.md"))
+        ForEach ($testResultPath in $sortedResultPaths)
         {
             $projectName = [System.IO.Path]::GetFileNameWithoutExtension($testResultPath)
             $targetPath  = [System.IO.path]::Combine($testResultsFolder, "$timestamp-$projectName.md")
@@ -262,12 +276,54 @@ try
 
             # Append the next test result URI.
 
+            # [$resultUris] and [$resultSummaries] will be returned as outputs to be consumed by
+            # subsequent [nforgeio-actions/teams-notify-test] step.  [result-uris] will be set to
+            # the semi-colon list of markdown formatted URIs to the test results as the well appear
+            # in the [nforgeio/test-results] repo.
+            #
+            # [result-summaries] will return as a semicolon separated list of summaries with the
+            # same order as [result-uris].  Each summary holds the total number of tests, failures 
+            # and skips, formatted like:
+            #
+            #       #tests,#errors,#skips
+
             if (![System.String]::IsNullOrEmpty($resultUris))
             {
-                $resultUris += ";" 
+                $resultUris      += ";" 
+                $resultSummaries += ";"
             }
 
             $resultUris += "[$projectName](https://github.com/nforgeio/test-results/blob/master/results/$timestamp-$projectName.md)"
+
+            # $hack(jefflill):
+            #
+            # We're going to read the test result markdown file to count the total number
+            # of tests along with the errors and skips.  This relies on the test report
+            # format not changing in the future.
+
+            $totalTests = 0
+            $errorTests = 0
+            $skipTests  = 0
+
+            ForEach ($line in [System.IO.File]::ReadAllLines($testResultPath))
+            {
+                if ($line.Contains("Passed </td>"))
+                {
+                    $totalTests++
+                }
+                elseif ($lines.Contains("Failed </td>"))
+                {
+                    $totalTests++
+                    $errorTests++
+                }
+                elseif ($lines.Contains("Skipped </td>"))
+                {
+                    $totalTests++
+                    skipTests++
+                }
+            }
+
+            $resultSummaries += "$totalTests,$errorTests,$skipTests"
         }
 
         # Commit and push the [test-results] repo changes.
@@ -285,7 +341,8 @@ try
 
     # Set the output values.
 
-    Set-ActionOutput "result-uris" $resultUris
+    Set-ActionOutput "result-uris"      $resultUris
+    Set-ActionOutput "result-summaries" $resultSummaries
 
     if ($success)
     {
