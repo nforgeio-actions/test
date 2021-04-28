@@ -29,7 +29,9 @@ outputs:
   success:
     description: "Returns 'true' when all tests passed (or were skipped) or 'false' when some tests failed"
   result-uris:
-    description: "Returns as the semicolon separated list of markdown formatted URIs to each test result"
+    description: "Returns as a semicolon separated list of markdown formatted URIs to each test result"
+  result-summaries:
+    description: "Returns as a semicolon separated list of test summary information for each test result.  Each summary is formatted like '#,#' where the first entry is the number of skipped tests and the second is the number of errors.  The summarys are in the same order as the [result-uris] links"
 runs:
   using: node12
   main: action.js
