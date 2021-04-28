@@ -278,7 +278,7 @@ try
 
             # [$resultUris] and [$resultSummaries] will be returned as outputs to be consumed by
             # subsequent [nforgeio-actions/teams-notify-test] step.  [result-uris] will be set to
-            # the semi-colon list of markdown formatted URIs to the test results as the well appear
+            # the semicolon list of markdown formatted URIs to the test results as the well appear
             # in the [nforgeio/test-results] repo.
             #
             # [result-summaries] will return as a semicolon separated list of summaries with the
