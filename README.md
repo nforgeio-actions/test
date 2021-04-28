@@ -6,7 +6,7 @@ Executes solution/repository unit tests.
 
 ## Examples
 
-**Run neonCLOUD unit tests**
+**Run neonCLOUD unit tests:**
 ```
 - id: test
   uses: nforgeio-actions/test@master
