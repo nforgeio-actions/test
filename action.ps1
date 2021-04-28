@@ -293,7 +293,7 @@ try
                 $resultSummaries += ";"
             }
 
-            $resultUris += "[$projectName](https://github.com/nforgeio/test-results/blob/master/results/$timestamp-$projectName.md)"
+            $resultUris += "[results](https://github.com/nforgeio/test-results/blob/master/results/$timestamp-$projectName.md)"
 
             # $hack(jefflill):
             #
