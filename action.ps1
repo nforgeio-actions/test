@@ -43,7 +43,8 @@ Pop-Location
 # Read the inputs.
 
 $repo          = Get-ActionInput "repo"           $true
-$filter        = Get-ActionInput "filter"         $false
+$buildConfig   = Get-ActionInput "build-config"   $true
+$testFilter    = Get-ActionInput "test-filter"    $false
 $resultsFolder = Get-ActionInput "results-folder" $true
 
 try
@@ -152,12 +153,12 @@ try
 
     $filterOption = ""
 
-    if (![System.String]::IsNullOrEmpty($filter))
+    if (![System.String]::IsNullOrEmpty($testFilter))
     {
         $filterOption = "--filter"
     }
 
-    dotnet test $solutionPath --logger "liquid.md" $filterOption $filter | Out-Null
+    dotnet test $solutionPath --logger "liquid.md" --configuration $buildConfig $filterOption $testFilter | Out-Null
     $success = $?
 
     # Copy all of the test results from the folders where they were
@@ -390,7 +391,8 @@ try
 
     # Set the output values.
 
-    Set-ActionOutput "test-filter" $filter
+    Set-ActionOutput "build-config" $buildConfig
+    Set-ActionOutput "test-filter" $testFilter
     Set-ActionOutput "result-uris" $resultUris
     Set-ActionOutput "result-info" $resultInfo
 

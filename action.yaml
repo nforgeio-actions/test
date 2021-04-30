@@ -22,8 +22,12 @@ inputs:
   repo:
     description: "Specifies the repository to be tested, one of: 'neonCLOUD', 'neonKUBE', or 'neonLIBRARY'"
     required: true
-  filter:
-    description: "Optionally specifies a test trait filter"
+  build-config:
+    description: "Optionally specifies the build/test configuration"
+    required: false
+    default: release
+  test-filter:
+    description: "Optionally specifies a test filter"
     required: false
     default: ""
   results-folder:
@@ -32,7 +36,9 @@ inputs:
 outputs:
   success:
     description: "Returns 'true' when all tests passed (or were skipped) or 'false' when some tests failed"
-  filter: 
+  build-config:
+    description: "Returns as the build/test configuration"
+  test-filter: 
     description: "Returns the test filter (if any)"
   result-uris:
     description: "Returns as a semicolon separated list of markdown formatted URIs to each test result"
