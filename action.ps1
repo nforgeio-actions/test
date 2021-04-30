@@ -184,13 +184,20 @@ try
 
         $projectName          = [System.IO.Path]::GetFileName($projectFolder)
         $projectResultsFolder = [System.IO.Path]::Combine($projectFolder, "TestResults")
-        $projectResultFiles   = [System.IO.Directory]::GetFiles($projectResultsFolder, "*.md")
         
-        if ([System.IO.Directory]::Exists($projectResultsFolder) -and $projectResultFiles.Length -eq 0)
+        if (![System.IO.Directory]::Exists($projectResultsFolder))
         {
             return  # No results for this test project
         }
 
+        $projectResultFiles = [System.IO.Directory]::GetFiles($projectResultsFolder, "*.md")
+
+        if ($projectResultFiles.Length -eq 0)
+        {
+            return  # No results for this test project
+        }
+
+        
         Copy-Item -Path $projectResultFiles[0] -Destination $([System.IO.Path]::Combine($resultsFolder, "$projectName.md"))
 
         $projectsWithResults.Add($projectName, "true")
