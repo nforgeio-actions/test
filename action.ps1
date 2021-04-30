@@ -372,16 +372,19 @@ try
             $resultInfo += "$projectName,$totalTests,$errorTests,$skipTests,$elapsed"
         }
 
-        # Commit and push the [test-results] repo changes.
+        # Commit and push any [test-results] repo changes.
 
-        git add --all
-        ThrowOnExitCode
+        if ($sortedResultPaths.Length -gt 0)
+        {
+            git add --all
+            ThrowOnExitCode
 
-        git commit --all --message "test[$repo]: $timestamp"
-        ThrowOnExitCode
+            git commit --all --message "test[$repo]: $timestamp"
+            ThrowOnExitCode
 
-        git push
-        ThrowOnExitCode
+            git push
+            ThrowOnExitCode
+        }
 
     Pop-Location
 
