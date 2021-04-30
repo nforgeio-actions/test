@@ -316,7 +316,7 @@ try
                 {
                     $totalTests++
                 }
-                elseif ($lines.Contains("Failed </td>"))
+                elseif ($line.Contains("Failed </td>"))
                 {
                     $totalTests++
                     $errorTests++
