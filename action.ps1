@@ -330,7 +330,7 @@ try
                 elseif ($line.StartsWith("<strong>Date:</strong>"))
                 {
                     $posStart = "<strong>Date:</strong>".Length
-                    $posEnd   = $line.IndexOf(">", $posStart)
+                    $posEnd   = $line.IndexOf("<br />", $posStart)
 
                     if ($posEnd -ne -1)
                     {
