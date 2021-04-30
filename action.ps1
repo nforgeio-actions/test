@@ -43,6 +43,7 @@ Pop-Location
 # Read the inputs.
 
 $repo          = Get-ActionInput "repo"           $true
+$filter        = Get-ActionInput "filter"         $false
 $resultsFolder = Get-ActionInput "results-folder" $true
 
 try
@@ -100,6 +101,7 @@ try
             $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Cryptography")
             $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Cryptography.net")
             $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Deployment")
+            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Identity")
             $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Kube")
             $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.ModelGen")
             $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.ModelGenCli")
@@ -111,8 +113,6 @@ try
             $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Xunit")
             $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.YugaByte")
             $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.NeonCli")
-            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.RestApi")
-            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test_Identity")
         }
           
         "neonLIBRARY"
@@ -150,7 +150,14 @@ try
 
     # Run the solution tests.
 
-    dotnet test $solutionPath --logger "liquid.md"
+    $filterOption = ""
+
+    if (![System.String]::IsNullOrEmpty($filter))
+    {
+        $filterOption = "--filter '$filter'"
+    }
+
+    dotnet test $solutionPath $filterOption --logger "liquid.md"
     $success = $?
 
     # Copy all of the test results from the folders where they were

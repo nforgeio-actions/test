@@ -22,8 +22,12 @@ inputs:
   repo:
     description: "Specifies the repository to be tested, one of: 'neonCLOUD', 'neonKUBE', or 'neonLIBRARY'"
     required: true
+  filter:
+    description: "Optionally specifies a test trait filter"
+    required: false
+    default: ""
   results-folder:
-    description: "Specifies the folder where test result files will be copied"
+    description: "Specifies the folder where test result files will be copied on the runner"
     required: true
 outputs:
   success:
