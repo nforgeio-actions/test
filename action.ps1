@@ -154,7 +154,7 @@ try
 
     if (![System.String]::IsNullOrEmpty($filter))
     {
-        $filterOption = "--filter
+        $filterOption = "--filter"
     }
 
     dotnet test $solutionPath --logger "liquid.md" $filterOption $filter
