@@ -154,10 +154,10 @@ try
 
     if (![System.String]::IsNullOrEmpty($filter))
     {
-        $filterOption = "--filter '$filter'"
+        $filterOption = "-- --filter '$filter'"
     }
 
-    dotnet test $solutionPath $filterOption --logger "liquid.md"
+    dotnet test $solutionPath --logger "liquid.md" $filterOption
     $success = $?
 
     # Copy all of the test results from the folders where they were
@@ -376,13 +376,13 @@ try
 
         if ($sortedResultPaths.Length -gt 0)
         {
-            git add --all
+            git add --all | Out-Null
             ThrowOnExitCode
 
-            git commit --all --message "test[$repo]: $timestamp"
+            git commit --all --message "test[$repo]: $timestamp" | Out-Null
             ThrowOnExitCode
 
-            git push
+            git push | Out-Null
             ThrowOnExitCode
         }
 
