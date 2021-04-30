@@ -307,7 +307,7 @@ try
 
             ForEach ($line in [System.IO.File]::ReadAllLines($testResultPath))
             {
-                if ([System.String].IsNullOrEmpty($line))
+                if ([System.String]::IsNullOrEmpty($line))
                 {
                     Continue
                 }
