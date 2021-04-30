@@ -157,7 +157,7 @@ try
         $filterOption = "--filter"
     }
 
-    dotnet test $solutionPath --logger "liquid.md" $filterOption $filter
+    dotnet test $solutionPath --logger "liquid.md" $filterOption $filter | Out-Null
     $success = $?
 
     # Copy all of the test results from the folders where they were
@@ -391,7 +391,7 @@ try
     # Set the output values.
 
     Write-ActionOutput "***************************************"
-    Write-ActionOutput "test-filter: $testFilter"
+    Write-ActionOutput "test-filter: $filter"
     Write-ActionOutput "***************************************"
 
     Set-ActionOutput "test-filter" $filter
