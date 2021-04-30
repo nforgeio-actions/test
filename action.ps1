@@ -321,7 +321,7 @@ try
                     $totalTests++
                     $errorTests++
                 }
-                elseif ($lines.Contains("Skipped </td>"))
+                elseif ($line.Contains("Skipped </td>"))
                 {
                     $totalTests++
                     skipTests++
