@@ -172,7 +172,7 @@ try
     #       RenameAndCopy() will build a map with the projects that
     #       have acutally has results for user further below.
 
-    $projectsWithResults = ${}
+    $projectsWithResults = @{}
 
     function RenameAndCopy
     {
@@ -213,7 +213,7 @@ try
     #
     # We're also going to remove files with timestamps older than the integer
     # value from [$/setting-retention-days] to keep a lid on the number of 
-    # files that need to be pulled (note that the history will keep growing).
+    # files that need to be pulled (note that the history will always grow).
 
     $testResultsFolder = [System.IO.Path]::Combine($ntRoot, "results")
 
