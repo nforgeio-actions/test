@@ -390,6 +390,10 @@ try
 
     # Set the output values.
 
+    Write-ActionOutput "***************************************"
+    Write-ActionOutput "test-filter: $testFilter"
+    Write-ActionOutput "***************************************"
+
     Set-ActionOutput "test-filter" $filter
     Set-ActionOutput "result-uris" $resultUris
     Set-ActionOutput "result-info" $resultInfo
