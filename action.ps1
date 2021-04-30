@@ -390,6 +390,7 @@ try
 
     # Set the output values.
 
+    Set-ActionOutput "filter" $filter
     Set-ActionOutput "result-uris" $resultUris
     Set-ActionOutput "result-info" $resultInfo
 

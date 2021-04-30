@@ -32,6 +32,8 @@ inputs:
 outputs:
   success:
     description: "Returns 'true' when all tests passed (or were skipped) or 'false' when some tests failed"
+  filter: 
+    description: "Returns the test filter (if any)"
   result-uris:
     description: "Returns as a semicolon separated list of markdown formatted URIs to each test result"
   result-info:
