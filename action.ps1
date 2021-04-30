@@ -293,17 +293,18 @@ try
                 $resultInfo += ";"
             }
 
-            $resultUris += "[DETAILS](https://github.com/nforgeio/test-results/blob/master/results/$timestamp-$projectName.md)"
+            $resultUris += "[details](https://github.com/nforgeio/test-results/blob/master/results/$timestamp-$projectName.md)"
 
             # $hack(jefflill):
             #
             # We're going to read the test result markdown file to count the total number
-            # of tests along with the errors and skips.  This relies on the test report
-            # format not changing in the future.
+            # of tests along with the errors and skips.  We'll also read the elapsed time.
+            # This relies on the test report format not changing much in the future.
 
             $totalTests = 0
             $errorTests = 0
             $skipTests  = 0
+            $elapsed    = "-na-"
 
             ForEach ($line in [System.IO.File]::ReadAllLines($testResultPath))
             {
@@ -326,9 +327,24 @@ try
                     $totalTests++
                     skipTests++
                 }
+                elseif ($line.StartsWith("<strong>Date:</strong>"))
+                {
+                    $posStart = "<strong>Date:</strong>".Length
+                    $posEnd   = $line.IndexOf(">", $posStart)
+
+                    if ($posEnd -ne -1)
+                    {
+                        $timeRange = $line.SubString($posStart, $posEnd - $posStart)
+                        $fields    = $timeRange.Split("-")
+                        $startDate = [System.DateTime]::Parse($fields[0].Trim())
+                        $endDate   = [System.DateTime]::Parse($fields[1].Trim())
+
+                        $elapsed = $(New-TimeSpan $startDate $endDate).ToString("c")
+                    }
+                }
             }
 
-            $resultInfo += "$projectName,$totalTests,$errorTests,$skipTests,00:00:00"
+            $resultInfo += "$projectName,$totalTests,$errorTests,$skipTests,$elapsed"
         }
 
         # Commit and push the [test-results] repo changes.
