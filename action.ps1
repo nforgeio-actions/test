@@ -47,6 +47,11 @@ $buildConfig   = Get-ActionInput "build-config"   $true
 $testFilter    = Get-ActionInput "test-filter"    $false
 $resultsFolder = Get-ActionInput "results-folder" $true
 
+if ($buildConfig -ne "release")
+{
+    $buildConfig = "debug"
+}
+
 try
 {
     if ([System.String]::IsNullOrEmpty($ncRoot) -or ![System.IO.Directory]::Exists($ncRoot))
