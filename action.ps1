@@ -328,7 +328,7 @@ try
                 }
             }
 
-            $resultInfo += "$totalTests,$errorTests,$skipTests"
+            $resultInfo += "$projectName,$totalTests,$errorTests,$skipTests,00:00:00"
         }
 
         # Commit and push the [test-results] repo changes.
