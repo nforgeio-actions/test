@@ -186,7 +186,7 @@ try
         $projectResultsFolder = [System.IO.Path]::Combine($projectFolder, "TestResults")
         $projectResultFiles   = [System.IO.Directory]::GetFiles($projectResultsFolder, "*.md")
         
-        if ($projectResultFiles.Length -eq 0)
+        if ([System.IO.Directory]::Exists($projectResultsFolder) -and $projectResultFiles.Length -eq 0)
         {
             return  # No results for this test project
         }
