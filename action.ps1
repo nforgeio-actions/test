@@ -154,10 +154,10 @@ try
 
     if (![System.String]::IsNullOrEmpty($filter))
     {
-        $filterOption = "--filter '$filter'"
+        $filterOption = "--filter
     }
 
-    dotnet test $solutionPath --logger "liquid.md" $filterOption
+    dotnet test $solutionPath --logger "liquid.md" $filterOption $filter
     $success = $?
 
     # Copy all of the test results from the folders where they were
