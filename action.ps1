@@ -335,7 +335,7 @@ try
                     if ($posEnd -ne -1)
                     {
                         $timeRange = $line.SubString($posStart, $posEnd - $posStart)
-                        $fields    = $timeRange.Split("-")
+                        $fields    = $timeRange.Split(" - ")
                         $startDate = [System.DateTime]::Parse($fields[0].Trim())
                         $endDate   = [System.DateTime]::Parse($fields[1].Trim())
 
