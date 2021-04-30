@@ -263,9 +263,9 @@ try
         # test result URIs for the [result-uris] output along with the matching String
         # with test result summaries for the [result-summaries] output.
 
-        $timestamp       = $utcNow.ToString("yyyy-MM-ddThh_mm_ssZ")
-        $resultUris      = ""
-        $resultSummaries = ""
+        $timestamp  = $utcNow.ToString("yyyy-MM-ddThh_mm_ssZ")
+        $resultUris = ""
+        $resultInfo = ""
 
         ForEach ($testResultPath in $sortedResultPaths)
         {
@@ -276,7 +276,7 @@ try
 
             # Append the next test result URI.
 
-            # [$resultUris] and [$resultSummaries] will be returned as outputs to be consumed by
+            # [$resultUris] and [$resultInfo] will be returned as outputs to be consumed by
             # subsequent [nforgeio-actions/teams-notify-test] step.  [result-uris] will be set to
             # the semicolon list of markdown formatted URIs to the test results as the well appear
             # in the [nforgeio/test-results] repo.
@@ -289,8 +289,8 @@ try
 
             if (![System.String]::IsNullOrEmpty($resultUris))
             {
-                $resultUris      += ";" 
-                $resultSummaries += ";"
+                $resultUris += ";" 
+                $resultInfo += ";"
             }
 
             $resultUris += "[results](https://github.com/nforgeio/test-results/blob/master/results/$timestamp-$projectName.md)"
@@ -328,7 +328,7 @@ try
                 }
             }
 
-            $resultSummaries += "$totalTests,$errorTests,$skipTests"
+            $resultInfo += "$totalTests,$errorTests,$skipTests"
         }
 
         # Commit and push the [test-results] repo changes.
@@ -346,8 +346,8 @@ try
 
     # Set the output values.
 
-    Set-ActionOutput "result-uris"      $resultUris
-    Set-ActionOutput "result-summaries" $resultSummaries
+    Set-ActionOutput "result-uris" $resultUris
+    Set-ActionOutput "result-info" $resultInfo
 
     if ($success)
     {

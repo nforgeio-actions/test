@@ -30,7 +30,7 @@ outputs:
     description: "Returns 'true' when all tests passed (or were skipped) or 'false' when some tests failed"
   result-uris:
     description: "Returns as a semicolon separated list of markdown formatted URIs to each test result"
-  result-summaries:
+  result-info:
     description: "Returns as a semicolon separated list of test summary information for each test result.  Each summary is formatted like '#tests,#errors,#skips'.  The summarys are in the same order as the [result-uris] links"
 runs:
   using: node12
