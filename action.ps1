@@ -162,8 +162,17 @@ try
 
     # Copy all of the test results from the folders where they were
     # generated to the results folder passed to the action.  There should
-    # only be one results file in eachn directory and we're going to 
+    # only be one results file in each directory and we're going to 
     # rename each file to: PROJECT-NAME.md.
+    #
+    # NOTE: It's possible that there will be no results file for a 
+    #       project when a specified filter filters-out all tests
+    #       from the project.
+    #
+    #       RenameAndCopy() will build a map with the projects that
+    #       have acutally has results for user further below.
+
+    $projectsWithResults = ${}
 
     function RenameAndCopy
     {
@@ -177,12 +186,14 @@ try
         $projectResultsFolder = [System.IO.Path]::Combine($projectFolder, "TestResults")
         $projectResultFiles   = [System.IO.Directory]::GetFiles($projectResultsFolder, "*.md")
         
-        if ($projectResultFiles.Count -eq 0)
+        if ($projectResultFiles.Length -eq 0)
         {
             return  # No results for this test project
         }
 
         Copy-Item -Path $projectResultFiles[0] -Destination $([System.IO.Path]::Combine($resultsFolder, "$projectName.md"))
+
+        $projectsWithResults.Add($projectName, "true")
     }
 
     ForEach ($projectFolder in $testProjectFolders)
