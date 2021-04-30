@@ -80,15 +80,14 @@ Executes solution/repository unit tests.
   if: ${{ always() }}
   with:
     channel: ${{ steps.environment.outputs.TEAM_DEVOPS_CHANNEL }}
-    start-time: ${{ steps.start-test-timestamp.outputs.value }}
-    finish-time: ${{ steps.finish-test-timestamp.outputs.value }}
+    start-time: ${{ steps.start-build-timestamp.outputs.value }}
+    finish-time: ${{ steps.finish-build-timestamp.outputs.value }}
+    build-summary: ${{ env.test-summary }}
     build-branch: ${{ steps.build.outputs.build-branch }}
     build-commit: ${{ steps.build.outputs.build-commit }}
     build-commit-uri: ${{ steps.build.outputs.build-commit-uri }}
-    test-summary: ${{ env.test-summary }}
-    test-outcome: ${{ steps.test.outcome }}
-    test-success: ${{ steps.test.outputs.success }}
-    test-result-uris: ${{ steps.test.outputs.result-uris }}
+    build-outcome: ${{ steps.build.outcome }}
+    build-success: ${{ steps.build.outputs.success }}
     workflow-ref: ${{ env.workflow-ref }}
-    send-on: always
+    send-on: build-fail
 ```
