@@ -551,7 +551,7 @@ Write-ActionOutput "*** 8"
 
         $resultFacts = ""
         
-        For ($i = 0; i -lt $resultUris.Length; i++)
+        For ($i = 0; $i -lt $resultUris.Length; i++)
         {
             $resultUri  = $resultUris[$i]
             $resultInfo = $resultInfo[$i]
