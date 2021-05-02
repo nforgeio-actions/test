@@ -42,17 +42,18 @@ Pop-Location
 
 # Read the inputs.
 
-$repo            = Get-ActionInput "repo"             $true
-$buildBranch     = Get-ActionInput "build-branch"     $false
-$buildConfig     = Get-ActionInput "build-config"     $false
-$buildCommit     = Get-ActionInput "build-commit"     $false
-$buildCommitUri  = Get-ActionInput "build-commit-uri" $false
-$testFilter      = Get-ActionInput "test-filter"      $false
-$resultsFolder   = Get-ActionInput "results-folder"   $true
-$issueRepo       = Get-ActionInput "issue-repo"       $false
-$issueTitle      = Get-ActionInput "issue-title"      $false
-$issueAssignees  = Get-ActionInput "issue-assignees"  $false
-$issueLabels     = Get-ActionInput "issue-labels"     $false
+$repo             = Get-ActionInput "repo"               $true
+$buildBranch      = Get-ActionInput "build-branch"       $false
+$buildConfig      = Get-ActionInput "build-config"       $false
+$buildCommit      = Get-ActionInput "build-commit"       $false
+$buildCommitUri   = Get-ActionInput "build-commit-uri"   $false
+$testFilter       = Get-ActionInput "test-filter"        $false
+$resultsFolder    = Get-ActionInput "results-folder"     $true
+$issueRepo        = Get-ActionInput "issue-repo"         $false
+$issueTitle       = Get-ActionInput "issue-title"        $false
+$issueAssignees   = Get-ActionInput "issue-assignees"    $false
+$issueLabels      = Get-ActionInput "issue-labels"       $false
+$issueAppendLabel = Get-ActionInput "issue-append-label" $false
 
 if ($buildConfig -ne "release")
 {

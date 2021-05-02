@@ -58,6 +58,10 @@ inputs:
     description: "Optionally specifies a comma separated list of GitHub users to be assigned to any submitted issue"
     required: false
     default: ""
+  issue-append-label:
+    description: "Optionally specifies the label that combined with the title and author will be used to append comments to an existing issue rather than creating a new one"
+    required: false
+    default: "devbot"
   issue-labels:
     description: "Optionally specifies a comma separated list of labels to be assigned to any submitted issue"
     required: false
