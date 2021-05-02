@@ -438,7 +438,7 @@ Write-ActionOutput "*** 3"
                     Continue;
                 }
 
-                $assignees.Add($assignee)
+                $assignees += $assignee
             }
         }
 Write-ActionOutput "*** 4"
@@ -457,7 +457,7 @@ Write-ActionOutput "*** 5"
                     Continue;
                 }
 
-                $labels.Add($label)
+                $labels += $label
             }
         }
 Write-ActionOutput "*** 6"
