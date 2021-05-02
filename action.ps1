@@ -540,7 +540,7 @@ Write-ActionOutput "*** 7"
         $body = $body.Replace("@test-filter", $filter)
         $body = $body.Replace("@build-commit", $buildCommit)
         $body = $body.Replace("@workflow-run-uri", $workflowRunUri)
-        $body = $body.Replace("@workflow-uri", $workflowUri))
+        $body = $body.Replace("@workflow-uri", $workflowUri)
 Write-ActionOutput "*** 8"
 
         # Add details for each test project.
