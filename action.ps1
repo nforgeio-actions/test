@@ -554,7 +554,7 @@ try
   <td>@status @result-uri - @elapsed pass: <b>@pass</b> fail: <b>@fail</b> skipped: @skip</td>
 </tr>
 '@
-            $factTemplate = $factTemplate.Replace("@test-project", name)
+            $factTemplate = $factTemplate.Replace("@test-project", $name)
             $factTemplate = $factTemplate.Replace("@status", $status)
             $factTemplate = $factTemplate.Replace("@result-uri", $resultUri)
             $factTemplate = $factTemplate.Replace("@elapsed", $elapsed)
