@@ -507,9 +507,16 @@ try
         $runner = $env:COMPUTERNAME
         $runner = $runner.ToUpper()
 
+        $filter = $testFilter
+
+        if ([System.String]::IsNullOrEmpty($filter))
+        {
+            $filter = "-na-"
+        }
+
         $body = $body.Replace("@build-branch", $buildBranch)
         $body = $body.Replace("@build-config", $buildConfig)
-        $body = $body.Replace("@test-filter", $testFilter)
+        $body = $body.Replace("@test-filter", $filter)
         $body = $body.Replace("@build-commit", $buildCommit)
         $body = $body.Replace("@@workflow-run-uri", $(Get-WorkflowRunUri))
         $body = $body.Replace("@@workflow-uri", $(Get-WorkflowUri))
