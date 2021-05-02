@@ -406,17 +406,29 @@ try
     # Create a new issue or append a comment to an existing one when there
     # are test failures and when the issue repo is passed.
 
+Write-ActionOutput "***********************************************"
+Write-ActionOutput "*** success:          $success"
+Write-ActionOutput "*** issueRepo:        $issueRepo"
+Write-ActionOutput "*** issueTitle:       $issueTitle"
+Write-ActionOutput "*** issueAssignees:   $issueAssignees"
+Write-ActionOutput "*** issueLabels:      $issueLabels"
+Write-ActionOutput "*** issueAppendLabel: $issueAppendLabel"
+
     if (!$success -and ![System.String]::IsNullOrEmpty($issueRepo))
     {
+Write-ActionOutput "*** 0"
         if (![System.String]::IsNullOrEmpty($issueTitle))
         {
+Write-ActionOutput "*** 1"
             $issueTitle = "Automated tests failed!"
         }
 
+Write-ActionOutput "*** 2"
         $assignees = @()
 
         if (![System.String]::IsNullOrEmpty($issueAssignees))
         {
+Write-ActionOutput "*** 3"
             ForEach ($assignee in $issueAssignees.Split(","))
             {
                 $assignee = $assignee.Trim();
@@ -429,11 +441,13 @@ try
                 $assignees.Add($assignee)
             }
         }
+Write-ActionOutput "*** 4"
 
         $labels = @()
 
         if (![System.String]::IsNullOrEmpty($issueLabels))
         {
+Write-ActionOutput "*** 5"
             ForEach ($label in $issueLabels.Split(","))
             {
                 $label = $label.Trim();
@@ -446,6 +460,7 @@ try
                 $labels.Add($label)
             }
         }
+Write-ActionOutput "*** 6"
 
         $body =
 @'
@@ -504,6 +519,7 @@ try
         {
             $buildCommit = "-na-"
         }
+Write-ActionOutput "*** 7"
 
         $runner = $env:COMPUTERNAME
         $runner = $runner.ToUpper()
@@ -521,6 +537,7 @@ try
         $body = $body.Replace("@build-commit", $buildCommit)
         $body = $body.Replace("@workflow-run-uri", $(Get-WorkflowRunUri))
         $body = $body.Replace("@workflow-uri", $(Get-WorkflowUri))
+Write-ActionOutput "*** 8"
 
         # Add details for each test project.
 
@@ -572,6 +589,8 @@ try
 
             $resultFacts += $factTemplate
         }
+Write-ActionOutput "*** 9"
+[System.IO.File]::WriteAllText("C:\Temp\issue.txt", $body)
 
         $body = $body.Replace("@result-facts", $resultFacts)
 
@@ -585,7 +604,9 @@ try
                         -Labels         $labels `
                         -Assignees      $issueAssignees `
                         -MasterPassword $env:MASTER_PASSWORD
+Write-ActionOutput "*** 10"
     }
+Write-ActionOutput "***********************************************"
 
     # Set the output values.
 
