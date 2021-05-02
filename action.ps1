@@ -555,6 +555,8 @@ Write-ActionOutput "*** 8"
         {
             $resultUri = $resultUris[$i]
 
+            # Extract the statistics from the corresponding summary.
+
             $details = $resultInfo[$i].Split(",")
             $name    = $details[0]
             $total   = [int]$details[1]
