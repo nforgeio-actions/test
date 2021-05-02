@@ -581,7 +581,7 @@ try
         New-GitHubIssue -Repo           $repo `
                         -Title          $issueTitle `
                         -Body           $body `
-                        -AppendLabel    $issueLabels `
+                        -AppendLabel    $issueAppendLabel `
                         -Labels         $labels `
                         -Assignees      $issueAssignees `
                         -MasterPassword $env:MASTER_PASSWORD
