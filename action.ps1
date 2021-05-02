@@ -518,8 +518,8 @@ try
         $body = $body.Replace("@build-config", $buildConfig)
         $body = $body.Replace("@test-filter", $filter)
         $body = $body.Replace("@build-commit", $buildCommit)
-        $body = $body.Replace("@@workflow-run-uri", $(Get-WorkflowRunUri))
-        $body = $body.Replace("@@workflow-uri", $(Get-WorkflowUri))
+        $body = $body.Replace("@workflow-run-uri", $(Get-WorkflowRunUri))
+        $body = $body.Replace("@workflow-uri", $(Get-WorkflowUri))
 
         # Add details for each test project.
 
@@ -581,6 +581,7 @@ try
                         -Title          $issueTitle `
                         -Body           $body `
                         -AppendLabel    $issueLabels `
+                        -Labels         $labels `
                         -Assignees      $issueAssignees `
                         -MasterPassword $env:MASTER_PASSWORD
     }
