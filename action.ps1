@@ -74,7 +74,7 @@ try
 
     # Delete any existing test results folder and then create a fresh folder.
       
-    if ([System.IO.File]::Exists($resultsFolder)
+    if ([System.IO.File]::Exists($resultsFolder))
     {
         [System.IO.File]::Delete($resultsFolder)
     }
