@@ -554,7 +554,7 @@ Write-ActionOutput "*** 8"
         $resultUriArray  = $resultUris.Split(";")
         $resultInfoArray = $resultInfo.Split(";")
         
-        For ($i = 0; $i -lt $resultUriArray.Length; i++)
+        For ($i = 0; $i -lt $resultUriArray.Length; $i++)
         {
             $resultUri = $resultUriArray[$i]
 
