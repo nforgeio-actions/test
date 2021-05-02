@@ -553,8 +553,8 @@ Write-ActionOutput "*** 8"
         
         For ($i = 0; $i -lt $resultUris.Length; i++)
         {
-            $resultUri  = $resultUris[$i]
-            $resultInfo = $resultInfo[$i]
+            $resultUri = $resultUris[$i]
+            $details   = $resultInfo[$i]
 
             $details = $resultInfo[$i].Split(",")
             $name    = $details[0]
