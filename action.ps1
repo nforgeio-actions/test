@@ -550,14 +550,17 @@ Write-ActionOutput "*** 8"
         $errorStatus   = "&#x274C"      # error cross (HTML encoded)
 
         $resultFacts = ""
+
+        $resultUriArray  = $resultUris.Split(";")
+        $resultInfoArray = $$resultInfo.Split(";")
         
-        For ($i = 0; $i -lt $resultUris.Length; i++)
+        For ($i = 0; $i -lt $resultUriArray.Length; i++)
         {
-            $resultUri = $resultUris[$i]
+            $resultUri = $resultUriArray[$i]
 
             # Extract the details from the corresponding summary.
 
-            $details = $resultInfo[$i].Split(",")
+            $details = $resultInfoArray[$i].Split(",")
             $name    = $details[0]
             $total   = [int]$details[1]
             $errors  = [int]$details[2]
