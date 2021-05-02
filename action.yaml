@@ -11,10 +11,14 @@
 # Runs unit tests for the Release configuration within a neonFORGE repo and then
 # uploads the test output as a workflow artifact.
 #
-# NOTE:
+# NOTE: This action is intended to be used after a code build has been performed in
+#       the same workflow job.
 #
-# This action is intended to be used after a code build has been performed in
-# the same workflow job.
+# NOTE: This action can be configured to autmoatically submit and issue on failure
+#       or append a comment to an existing issue created by the same (devbot) user
+#       with the same title and label.
+#
+#       The [issue-repo] and [issue-title] inputs must be passed to enable this.
 
 name: test
 description: "Runs unit tests within a neonFORGE repo and uploads the results as a workflow artifact"
@@ -22,10 +26,19 @@ inputs:
   repo:
     description: "Specifies the repository to be tested, one of: 'neonCLOUD', 'neonKUBE', or 'neonLIBRARY'"
     required: true
+  build-branch:
+    description: "Optionally indicates which target repo branch was built"
+    required: false
   build-config:
     description: "Optionally specifies the build/test configuration"
     required: false
     default: release
+  build-commit:
+    description: "Optionally specifies the build commit"
+    required: false
+  build-commit-uri:
+    description: "Optionally specifies target repo commit URI"
+    required: false
   test-filter:
     description: "Optionally specifies a test filter"
     required: false
@@ -33,6 +46,22 @@ inputs:
   results-folder:
     description: "Specifies the folder where test result files will be copied on the runner"
     required: true
+  issue-repo:
+    description: "Optionally specifies the GitHub repo where issues for failed tests are to be created, like: github.com/nforgeio/neonCLOUD"
+    required: false
+    default: ""
+  issue-title:
+    description: "Optionally specifies the title for any submitted issue"
+    required: false
+    default: ""
+  issue-assignees: 
+    description: "Optionally specifies a comma separated list of GitHub users to be assigned to any submitted issue"
+    required: false
+    default: ""
+  issue-labels:
+    description: "Optionally specifies a comma separated list of labels to be assigned to any submitted issue"
+    required: false
+    default: ""
 outputs:
   success:
     description: "Returns 'true' when all tests passed (or were skipped) or 'false' when some tests failed"

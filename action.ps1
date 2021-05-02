@@ -42,10 +42,17 @@ Pop-Location
 
 # Read the inputs.
 
-$repo          = Get-ActionInput "repo"           $true
-$buildConfig   = Get-ActionInput "build-config"   $true
-$testFilter    = Get-ActionInput "test-filter"    $false
-$resultsFolder = Get-ActionInput "results-folder" $true
+$repo            = Get-ActionInput "repo"             $true
+$buildBranch     = Get-ActionInput "build-branch"     $false
+$buildConfig     = Get-ActionInput "build-config"     $false
+$buildCommit     = Get-ActionInput "build-commit"     $false
+$buildCommitUri  = Get-ActionInput "build-commit-uri" $false
+$testFilter      = Get-ActionInput "test-filter"      $false
+$resultsFolder   = Get-ActionInput "results-folder"   $true
+$issueRepo       = Get-ActionInput "issue-repo"       $false
+$issueTitle      = Get-ActionInput "issue-title"      $false
+$issueAssignees  = Get-ActionInput "issue-assignees"  $false
+$issueLabels     = Get-ActionInput "issue-labels"     $false
 
 if ($buildConfig -ne "release")
 {
@@ -393,6 +400,183 @@ try
         }
 
     Pop-Location
+    
+    #--------------------------------------------------------------------------
+    # Create a new issue or append a comment to an existing one when there
+    # are test failures and when the issue repo is passed.
+
+    if (!$success -and ![System.String]::IsNullOrEmpty($issueRepo))
+    {
+        if (![System.String]::IsNullOrEmpty($issueTitle))
+        {
+            $issueTitle = "Automated tests failed!"
+        }
+
+        $assignees = @()
+
+        if (![System.String]::IsNullOrEmpty($issueAssignees))
+        {
+            ForEach ($assignee in $issueAssignees.Split(","))
+            {
+                $assignee = $assignee.Trim();
+                
+                if ([System.String]::IsNullOrEmpty($asignee))
+                {
+                    Continue;
+                }
+
+                $assignees.Add($assignee)
+            }
+        }
+
+        $labels = @()
+
+        if (![System.String]::IsNullOrEmpty($issueLabels))
+        {
+            ForEach ($label in $issueLabels.Split(","))
+            {
+                $label = $label.Trim();
+                
+                if ([System.String]::IsNullOrEmpty($label))
+                {
+                    Continue;
+                }
+
+                $labels.Add($label)
+            }
+        }
+
+        $body =
+@'
+<table>
+<tr>
+  <td><b>Outcome:</b></td>
+  <td><b>TESTS FAILED</b></td>
+</tr>
+<tr>
+  <td><b>Branch:</b></td>
+  <td>@build-branch</td>
+</tr>
+<tr>
+  <td><b>Config:</b></td>
+  <td>@build-branch</td>
+</tr>
+<tr>
+  <td><b>Filter:</b></td>
+  <td>@test-filter</td>
+</tr>
+<tr>
+  <td><b>Commit:</b></td>
+  <td>@build-commit</td>
+</tr>
+<tr>
+  <td><b>Runner:</b></td>
+  <td>@runner</td>
+</tr>
+<tr>
+  <td><b>Workflow Run:</b></td>
+  <td><a href="@workflow-run-uri">workflow run</a></td>
+</tr>
+<tr>
+  <td><b>Workflow:</b></td>
+  <td><a href="@workflowuri">workflow run</a></td>
+</tr>
+@result-facts
+</table>
+'@
+
+        if ([System.String]::IsNullOrEmpty($buildBranch))
+        {
+            $buildBranch = "-na-"
+        }
+
+        if ([System.String]::IsNullOrEmpty($buildConfig))
+        {
+            $buildConfig = "-na-"
+        }
+
+        if (![System.String]::IsNullOrEmpty($buildCommit) -and ![System.String]::IsNullOrEmpty($buildCommitUri))
+        {
+            $buildCommit = '<a href="$buildCommitUri">$buildCommit</a>'
+        }
+        else
+        {
+            $buildCommit = "-na-"
+        }
+
+        $runner = $env:COMPUTERNAME
+        $runner = $runner.ToUpper()
+
+        $body = $body.Replace("@build-branch", $buildBranch)
+        $body = $body.Replace("@build-config", $buildConfig)
+        $body = $body.Replace("@test-filter", $testFilter)
+        $body = $body.Replace("@build-commit", $buildCommit)
+        $body = $body.Replace("@@workflow-run-uri", Get-WorkflowRunUri)
+        $body = $body.Replace("@@workflow-uri", Get-WorkflowUri)
+
+        # Add details for each test project.
+
+        $okStatus      = "&#x2714"      # heavy checkmark (HTML encoded)
+        $warningStatus = "&#x26A0"      # warning sign (HTML encoded)
+        $errorStatus   = "&#x274C"      # error cross (HTML encoded)
+
+        $resultFacts = ""
+        
+        For ($i = 0; i -lt $resultUris.Length; i++)
+        {
+            $resultUri  = $resultUris[$i]
+            $resultInfo = $resultInfo[$i]
+
+            $details = $resultInfo[$i].Split(",")
+            $name    = $details[0]
+            $total   = [int]$details[1]
+            $errors  = [int]$details[2]
+            $skips   = [int]$details[3]
+            $elapsed = $details[4]
+
+            if ($errors -gt 0)
+            {
+                $status = $errorStatus
+            }
+            elseif ($skips -gt 0)
+            {
+                $status = $warningStatus
+            }
+            else
+            {
+                $status = $okStatus
+            }
+
+            $factTemplate =
+@'
+<tr>
+  <td><b>@test-project:</b></td>
+  <td>@status @result-uri - @elapsed pass: <b>@pass</b> fail: <b>@fail</b> skipped: @skip</td>
+</tr>
+'@
+            $factTemplate = $factTemplate.Replace("@test-project", name)
+            $factTemplate = $factTemplate.Replace("@status", $status)
+            $factTemplate = $factTemplate.Replace("@result-uri", $resultUri)
+            $factTemplate = $factTemplate.Replace("@elapsed", $elapsed)
+            $factTemplate = $factTemplate.Replace("@pass", $total - $errors - $skips)
+            $factTemplate = $factTemplate.Replace("@fail", $errors)
+            $factTemplate = $factTemplate.Replace("@skip", $skips)
+
+            $resultFacts += $factTemplate
+        }
+
+        $body = $body.Replace("@result-facts", $resultFacts)
+
+        # Create the new issue or append to an existing one with the 
+        # same author, append label, and title.
+
+        New-GitHubIssue -Repo           $repo `
+                        -Title          $issueTitle `
+                        -Body           $body `
+                        -AppendLabel    $issueLabels `
+                        -Assignees      $issueAssignees `
+                        -MasterPassword $env:MASTER_PASSWORD
+    }
 
     # Set the output values.
 
