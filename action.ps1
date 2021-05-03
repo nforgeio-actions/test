@@ -78,7 +78,7 @@ try
 
     # Fetch the workflow and run run URIs.
 
-    $workflowUri    = Get-ActionWorkflowUri $env:workflow-path
+    $workflowUri    = Get-ActionWorkflowUri $env:workflow_path
     $workflowRunUri = Get-ActionWorkflowRunUri
 
     # Determine the solution path for the repo as well as the paths to
