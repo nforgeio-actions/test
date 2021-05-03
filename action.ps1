@@ -76,6 +76,11 @@ try
 
     [System.IO.Directory]::CreateDirectory($resultsFolder)
 
+    # Fetch the workflow and run run URIs.
+
+    $workflowUri    = Get-ActionWorkflowUri $env:workflow-path
+    $workflowRunUri = Get-ActionWorkflowRunUri
+
     # Determine the solution path for the repo as well as the paths to
     # test project folders.
     
@@ -151,11 +156,6 @@ try
             throw "[$repo] is not a supported repo."
         }
     }
-
-    # Fetch the workflow and run run URIs.
-
-    $workflowUri    = Get-ActionWorkflowUri $repoPath
-    $workflowRunUri = Get-ActionWorkflowRunUri
 
     # Delete all of the project test result folders.
 
