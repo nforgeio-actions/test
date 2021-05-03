@@ -98,6 +98,7 @@ try
           
         "neonCLOUD"
         {
+            $repoPath     = "github.com/nforgeio/neonCLOUD"
             $solutionPath = [System.IO.Path]::Combine($env:NC_ROOT, "neonCLOUD.sln")
             $testRoot     = [System.IO.Path]::Combine($env:NC_ROOT, "Test")
 
@@ -108,6 +109,7 @@ try
           
         "neonKUBE"
         {
+            $repoPath     = "github.com/nforgeio/neonKUBE"
             $solutionPath = [System.IO.Path]::Combine($env:NF_ROOT, "neonKUBE.sln")
             $testRoot     = [System.IO.Path]::Combine($env:NF_ROOT, "Test")
 
@@ -480,7 +482,7 @@ Write-ActionOutput "*** 6"
 </tr>
 <tr>
   <td><b>Config:</b></td>
-  <td>@build-branch</td>
+  <td>@build-config</td>
 </tr>
 <tr>
   <td><b>Filter:</b></td>
@@ -496,11 +498,11 @@ Write-ActionOutput "*** 6"
 </tr>
 <tr>
   <td><b>Workflow Run:</b></td>
-  <td><a href="@workflow-run-uri">workflow run</a></td>
+  <td><a href="@workflow-run-uri">link</a></td>
 </tr>
 <tr>
   <td><b>Workflow:</b></td>
-  <td><a href="@workflowuri">workflow run</a></td>
+  <td><a href="@workflowuri">link</a></td>
 </tr>
 @result-facts
 </table>
@@ -539,18 +541,17 @@ Write-ActionOutput "*** 7"
         $body = $body.Replace("@build-config", $buildConfig)
         $body = $body.Replace("@test-filter", $filter)
         $body = $body.Replace("@build-commit", $buildCommit)
+        $body = $body.Replace("@runner", $runner)
         $body = $body.Replace("@workflow-run-uri", $workflowRunUri)
         $body = $body.Replace("@workflow-uri", $workflowUri)
 Write-ActionOutput "*** 8"
 
         # Add details for each test project.
 
-        $okStatus      = "&#x2714"      # heavy checkmark (HTML encoded)
-        $warningStatus = "&#x26A0"      # warning sign (HTML encoded)
-        $errorStatus   = "&#x274C"      # error cross (HTML encoded)
-
-        $resultFacts = ""
-
+        $okStatus        = "&#x2714"      # heavy checkmark (HTML encoded)
+        $warningStatus   = "&#x26A0"      # warning sign (HTML encoded)
+        $errorStatus     = "&#x274C"      # error cross (HTML encoded)
+        $resultFacts     = ""
         $resultUriArray  = $resultUris.Split(";")
         $resultInfoArray = $resultInfo.Split(";")
         
@@ -598,21 +599,22 @@ Write-ActionOutput "*** 8"
             $resultFacts += $factTemplate
         }
 Write-ActionOutput "*** 9"
-[System.IO.File]::WriteAllText("C:\Temp\issue.txt", $body)
 
         $body = $body.Replace("@result-facts", $resultFacts)
+[System.IO.File]::WriteAllText("C:\Temp\issue.txt", $body)
 
+Write-ActionOutput "*** 10"
         # Create the new issue or append to an existing one with the 
         # same author, append label, and title.
 
-        New-GitHubIssue -Repo           $repo `
+        New-GitHubIssue -Repo           $repoPath `
                         -Title          $issueTitle `
                         -Body           $body `
                         -AppendLabel    $issueAppendLabel `
                         -Labels         $labels `
                         -Assignees      $issueAssignees `
                         -MasterPassword $env:MASTER_PASSWORD
-Write-ActionOutput "*** 10"
+Write-ActionOutput "*** 11"
     }
 Write-ActionOutput "***********************************************"
 
