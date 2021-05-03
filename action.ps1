@@ -588,13 +588,13 @@ try
         # Create the new issue or append to an existing one with the 
         # same author, append label, and title.
 
-        New-GitHubIssue -Repo           $repoPath `
-                        -Title          $issueTitle `
-                        -Body           $body `
-                        -AppendLabel    $issueAppendLabel `
-                        -Labels         $labels `
-                        -Assignees      $issueAssignees `
-                        -MasterPassword $env:MASTER_PASSWORD
+        $issueUri = New-GitHubIssue -Repo           $repoPath `
+                                    -Title          $issueTitle `
+                                    -Body           $body `
+                                    -AppendLabel    $issueAppendLabel `
+                                    -Labels         $labels `
+                                    -Assignees      $issueAssignees `
+                                    -MasterPassword $env:MASTER_PASSWORD
     }
 
     # Set the output values.
@@ -603,6 +603,11 @@ try
     Set-ActionOutput "test-filter" $testFilter
     Set-ActionOutput "result-uris" $resultMarkdownUris
     Set-ActionOutput "result-info" $resultInfo
+
+    if (![System.String]::IsNullOrEmpty($issueUri))
+    {
+        Set-ActionOutput "issue-uri" $issueUri
+    }
 
     if ($success)
     {
