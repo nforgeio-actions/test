@@ -309,9 +309,10 @@ try
         # test result URIs for the [result-uris] output along with the matching String
         # with test result summaries for the [result-summaries] output.
 
-        $timestamp  = $utcNow.ToString("yyyy-MM-ddThh_mm_ssZ")
-        $resultUris = ""
-        $resultInfo = ""
+        $timestamp          = $utcNow.ToString("yyyy-MM-ddThh_mm_ssZ")
+        $resultMarkdownUris = ""
+        $resultHtmlUris     = @()
+        $resultInfo         = ""
 
         ForEach ($testResultPath in $sortedResultPaths)
         {
@@ -322,7 +323,7 @@ try
 
             # Append the next test result URI.
 
-            # [$resultUris] and [$resultInfo] will be returned as outputs to be consumed by
+            # [$resultMarkdownUris] and [$resultInfo] will be returned as outputs to be consumed by
             # subsequent [nforgeio-actions/teams-notify-test] step.  [result-uris] will be set to
             # the semicolon list of markdown formatted URIs to the test results as the well appear
             # in the [nforgeio/test-results] repo.
@@ -333,13 +334,14 @@ try
             #
             #       #tests,#errors,#skips
 
-            if (![System.String]::IsNullOrEmpty($resultUris))
+            if (![System.String]::IsNullOrEmpty($resultMarkdownUris))
             {
-                $resultUris += ";" 
-                $resultInfo += ";"
+                $resultMarkdownUris += ";" 
+                $resultInfo         += ";"
             }
 
-            $resultUris += "[details](https://github.com/nforgeio/test-results/blob/master/results/$timestamp-$projectName.md)"
+            $resultMarkdownUris += "[details](https://github.com/nforgeio/test-results/blob/master/results/$timestamp-$projectName.md)"
+            $resultHtmlUris     += '<a href="https://github.com/nforgeio/test-results/blob/master/results/$timestamp-$projectName.md">details</a>'
 
             # $hack(jefflill):
             #
@@ -415,6 +417,8 @@ try
 
 Write-ActionOutput "***********************************************"
 Write-ActionOutput "*** success:          $success"
+Write-ActionOutput "*** issueRepo:        $issueRepo"
+Write-ActionOutput "*** issueRepo:        $issueRepo"
 Write-ActionOutput "*** issueRepo:        $issueRepo"
 Write-ActionOutput "*** issueTitle:       $issueTitle"
 Write-ActionOutput "*** issueAssignees:   $issueAssignees"
@@ -502,7 +506,7 @@ Write-ActionOutput "*** 6"
 </tr>
 <tr>
   <td><b>Workflow:</b></td>
-  <td><a href="@workflowuri">link</a></td>
+  <td><a href="@workflow-uri">link</a></td>
 </tr>
 @result-facts
 </table>
@@ -552,12 +556,11 @@ Write-ActionOutput "*** 8"
         $warningStatus   = "&#x26A0"      # warning sign (HTML encoded)
         $errorStatus     = "&#x274C"      # error cross (HTML encoded)
         $resultFacts     = ""
-        $resultUriArray  = $resultUris.Split(";")
         $resultInfoArray = $resultInfo.Split(";")
         
-        For ($i = 0; $i -lt $resultUriArray.Length; $i++)
+        For ($i = 0; $i -lt $resultHtmlUris.Length; $i++)
         {
-            $resultUri = $resultUriArray[$i]
+            $resultUri = $resultHtmlUris[$i]
 
             # Extract the details from the corresponding summary.
 
@@ -622,7 +625,7 @@ Write-ActionOutput "***********************************************"
 
     Set-ActionOutput "build-config" $buildConfig
     Set-ActionOutput "test-filter" $testFilter
-    Set-ActionOutput "result-uris" $resultUris
+    Set-ActionOutput "result-uris" $resultMarkdownUris
     Set-ActionOutput "result-info" $resultInfo
 
     if ($success)

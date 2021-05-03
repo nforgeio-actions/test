@@ -29,6 +29,7 @@ inputs:
   build-branch:
     description: "Optionally indicates which target repo branch was built"
     required: false
+    default: master
   build-config:
     description: "Optionally specifies the build/test configuration"
     required: false
