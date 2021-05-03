@@ -341,7 +341,7 @@ try
             }
 
             $resultMarkdownUris += "[details](https://github.com/nforgeio/test-results/blob/master/results/$timestamp-$projectName.md)"
-            $resultHtmlUris     += '<a href="https://github.com/nforgeio/test-results/blob/master/results/$timestamp-$projectName.md">details</a>'
+            $resultHtmlUris     += "<a href=`"https://github.com/nforgeio/test-results/blob/master/results/$timestamp-$projectName.md`">details</a>"
 
             # $hack(jefflill):
             #
@@ -415,31 +415,17 @@ try
     # Create a new issue or append a comment to an existing one when there
     # are test failures and when the issue repo is passed.
 
-Write-ActionOutput "***********************************************"
-Write-ActionOutput "*** success:          $success"
-Write-ActionOutput "*** issueRepo:        $issueRepo"
-Write-ActionOutput "*** issueRepo:        $issueRepo"
-Write-ActionOutput "*** issueRepo:        $issueRepo"
-Write-ActionOutput "*** issueTitle:       $issueTitle"
-Write-ActionOutput "*** issueAssignees:   $issueAssignees"
-Write-ActionOutput "*** issueLabels:      $issueLabels"
-Write-ActionOutput "*** issueAppendLabel: $issueAppendLabel"
-
     if (!$success -and ![System.String]::IsNullOrEmpty($issueRepo))
     {
-Write-ActionOutput "*** 0"
         if (![System.String]::IsNullOrEmpty($issueTitle))
         {
-Write-ActionOutput "*** 1"
             $issueTitle = "Automated tests failed!"
         }
 
-Write-ActionOutput "*** 2"
         $assignees = @()
 
         if (![System.String]::IsNullOrEmpty($issueAssignees))
         {
-Write-ActionOutput "*** 3"
             ForEach ($assignee in $issueAssignees.Split(","))
             {
                 $assignee = $assignee.Trim();
@@ -452,13 +438,11 @@ Write-ActionOutput "*** 3"
                 $assignees += $assignee
             }
         }
-Write-ActionOutput "*** 4"
 
         $labels = @()
 
         if (![System.String]::IsNullOrEmpty($issueLabels))
         {
-Write-ActionOutput "*** 5"
             ForEach ($label in $issueLabels.Split(","))
             {
                 $label = $label.Trim();
@@ -471,7 +455,6 @@ Write-ActionOutput "*** 5"
                 $labels += $label
             }
         }
-Write-ActionOutput "*** 6"
 
         $body =
 @'
@@ -529,7 +512,6 @@ Write-ActionOutput "*** 6"
         {
             $buildCommit = "-na-"
         }
-Write-ActionOutput "*** 7"
 
         $runner = $env:COMPUTERNAME
         $runner = $runner.ToUpper()
@@ -548,7 +530,6 @@ Write-ActionOutput "*** 7"
         $body = $body.Replace("@runner", $runner)
         $body = $body.Replace("@workflow-run-uri", $workflowRunUri)
         $body = $body.Replace("@workflow-uri", $workflowUri)
-Write-ActionOutput "*** 8"
 
         # Add details for each test project.
 
@@ -601,12 +582,9 @@ Write-ActionOutput "*** 8"
 
             $resultFacts += $factTemplate
         }
-Write-ActionOutput "*** 9"
 
         $body = $body.Replace("@result-facts", $resultFacts)
-[System.IO.File]::WriteAllText("C:\Temp\issue.txt", $body)
 
-Write-ActionOutput "*** 10"
         # Create the new issue or append to an existing one with the 
         # same author, append label, and title.
 
@@ -617,9 +595,7 @@ Write-ActionOutput "*** 10"
                         -Labels         $labels `
                         -Assignees      $issueAssignees `
                         -MasterPassword $env:MASTER_PASSWORD
-Write-ActionOutput "*** 11"
     }
-Write-ActionOutput "***********************************************"
 
     # Set the output values.
 
@@ -643,5 +619,3 @@ catch
     Set-ActionOutput "success" "false"
     exit 1
 }
-
-Set-ActionOutput "success" $success
