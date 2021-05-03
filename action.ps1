@@ -506,7 +506,7 @@ try
 
         if (![System.String]::IsNullOrEmpty($buildCommit) -and ![System.String]::IsNullOrEmpty($buildCommitUri))
         {
-            $buildCommit = '<a href="$buildCommitUri">$buildCommit</a>'
+            $buildCommit = "<a href=`"$buildCommitUri`">$buildCommit</a>"
         }
         else
         {
