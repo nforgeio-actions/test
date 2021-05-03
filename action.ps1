@@ -67,11 +67,6 @@ try
         throw "Runner Config: neonCLOUD repo is not present."
     }
 
-    # Fetch the workflow and run run URIs.
-
-    $workflowUri    = Get-ActionWorkflowUri $env:workflow-path
-    $workflowRunUri = Get-ActionWorkflowRunUri
-
     # Delete any existing test results folder and then create a fresh folder.
       
     if ([System.IO.File]::Exists($resultsFolder))
@@ -156,6 +151,11 @@ try
             throw "[$repo] is not a supported repo."
         }
     }
+
+    # Fetch the workflow and run run URIs.
+
+    $workflowUri    = Get-ActionWorkflowUri $repoPath
+    $workflowRunUri = Get-ActionWorkflowRunUri
 
     # Delete all of the project test result folders.
 
