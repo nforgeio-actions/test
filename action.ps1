@@ -69,8 +69,8 @@ try
 
     # Fetch the workflow and run run URIs.
 
-    $workflowUri    = Get-WorkflowUri $env:workflow-path
-    $workflowRunUri = Get-WorkflowRunUri
+    $workflowUri    = Get-ActionWorkflowUri $env:workflow-path
+    $workflowRunUri = Get-ActionWorkflowRunUri
 
     # Delete any existing test results folder and then create a fresh folder.
       
