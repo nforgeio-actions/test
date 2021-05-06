@@ -54,7 +54,7 @@ inputs:
     required: false
     default: ""
   issue-assignees: 
-    description: "Optionally specifies a comma separated list of GitHub users to be assigned to any submitted issue"
+    description: "Optionally specifies a space separated list of GitHub users to be assigned to any submitted issue"
     required: false
     default: ""
   issue-append-label:
@@ -62,7 +62,7 @@ inputs:
     required: false
     default: "devbot"
   issue-labels:
-    description: "Optionally specifies a comma separated list of labels to be assigned to any submitted issue"
+    description: "Optionally specifies a space separated list of labels to be assigned to any submitted issue"
     required: false
     default: ""
 outputs:

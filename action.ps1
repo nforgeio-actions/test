@@ -426,7 +426,7 @@ try
 
         if (![System.String]::IsNullOrEmpty($issueAssignees))
         {
-            ForEach ($assignee in $issueAssignees.Split(","))
+            ForEach ($assignee in $issueAssignees.Split(" "))
             {
                 $assignee = $assignee.Trim();
                 
@@ -443,7 +443,7 @@ try
 
         if (![System.String]::IsNullOrEmpty($issueLabels))
         {
-            ForEach ($label in $issueLabels.Split(","))
+            ForEach ($label in $issueLabels.Split(" "))
             {
                 $label = $label.Trim();
                 
