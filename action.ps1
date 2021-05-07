@@ -357,7 +357,7 @@ try
                 elseif ($line.Contains("Skipped </td>"))
                 {
                     $totalTests++
-                    skipTests++
+                    $skipTests++
                 }
                 elseif ($line.StartsWith("<strong>Date:</strong>"))
                 {
