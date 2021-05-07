@@ -128,11 +128,13 @@ try
     #
     #       $/Test/**
         
-    $testProjects = @()
+    $testProjects       = @()
+    $testProjectFolders = @()
 
-    ForEach ($path in $([System.IO.Directory]::GetFiles($testRoot), "*.csproj", [System.IO.SearchOption]::AllDirectories))
+    ForEach ($projectPath in $([System.IO.Directory]::GetFiles($testRoot), "*.csproj", [System.IO.SearchOption]::AllDirectories))
     {
-        $testProjects += $path
+        $testProjects       += $path
+        $testProjectFolders += [System.IO.Path]::GetDirectoryName($projectPath)
     }
 
     # Delete all of the project test result folders.
