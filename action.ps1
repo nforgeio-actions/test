@@ -133,6 +133,14 @@ try
 
     ForEach ($projectPath in $([System.IO.Directory]::GetFiles($testRoot), "*.csproj", [System.IO.SearchOption]::AllDirectories))
     {
+Log-DebugLine "*****************************************"
+Log-DebugLine "projectPath: $projectPath"
+
+$tmp = [System.IO.Path]::GetDirectoryName($projectPath)
+
+Log-DebugLine "projectDir: $tmp"
+Log-DebugLine "*****************************************"
+
         $testProjects       += $path
         $testProjectFolders += [System.IO.Path]::GetDirectoryName($projectPath)
     }
