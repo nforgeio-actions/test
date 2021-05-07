@@ -176,6 +176,12 @@ try
     if (![System.String]::IsNullOrEmpty($testFilter))
     {
         $filterOption = "--filter"
+
+        # We need to escape some filter operators for CMD.EXE:
+
+        $testFilter = $testFilter.Replace("&", "\&")
+        $testFilter = $testFilter.Replace("|", "\|")
+        $testFilter = $testFilter.Replace("!", "\!")
     }
 
     dotnet test $solutionPath --logger "liquid.md" --configuration $buildConfig $filterOption $testFilter | Out-Null
