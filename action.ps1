@@ -139,7 +139,7 @@ try
 
     # Delete all of the project test result folders.
 
-    ForEach ($projectFolder in $testProjects)
+    ForEach ($projectFolder in $testProjectFolders)
     {
         $projectResultFolder = [System.IO.Path]::Combine($projectFolder, "TestResults")
 
@@ -207,7 +207,7 @@ try
         $projectsWithResults.Add($projectName, "true")
     }
 
-    ForEach ($projectFolder in $testProjects)
+    ForEach ($projectFolder in $testProjectFolders)
     {
         RenameAndCopy $projectFolder
     }
