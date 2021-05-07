@@ -169,6 +169,7 @@ Log-DebugLine "*****************************************"
     ForEach ($projectPath in $testProjects)
     {
 Log-DebugLine "*****************************************"
+Log-DebugLine "projectPath: $projectPath"
 Log-DebugLine "dotnet test $projectPath --logger 'liquid.md' --no-restore --configuration $buildConfig $filterOption $testFilter"
 Log-DebugLine "*****************************************"
         dotnet test $projectPath --logger "liquid.md" --no-restore --configuration $buildConfig $filterOption $filter | Out-Null
