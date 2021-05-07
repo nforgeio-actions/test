@@ -131,7 +131,7 @@ try
     $testProjects       = @()
     $testProjectFolders = @()
 
-    ForEach ($projectPath in $([System.IO.Directory]::GetFiles($testRoot), "*.csproj", [System.IO.SearchOption]::AllDirectories))
+    ForEach ($projectPath in $([System.IO.Directory]::GetFiles($testRoot, "*.csproj", [System.IO.SearchOption]::AllDirectories)))
     {
 Log-DebugLine "*****************************************"
 Log-DebugLine "projectPath: $projectPath"
