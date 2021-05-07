@@ -179,12 +179,13 @@ try
 
         # We need to escape some filter operators for CMD.EXE:
 
-        $testFilter = $testFilter.Replace("&", "\&")
-        $testFilter = $testFilter.Replace("|", "\|")
-        $testFilter = $testFilter.Replace("!", "\!")
+        $escapedFilter = $testFilter
+        $escapedFilter = $escapedFilter.Replace("&", "\&")
+        $escapedFilter = $escapedFilter.Replace("|", "\|")
+        $escapedFilter = $escapedFilter.Replace("!", "\!")
     }
 
-    dotnet test $solutionPath --logger "liquid.md" --configuration $buildConfig $filterOption $testFilter | Out-Null
+    dotnet test $solutionPath --logger "liquid.md" --configuration $buildConfig $filterOption $escapedFilter | Out-Null
     $success = $?
 
     # Copy all of the test results from the folders where they were
