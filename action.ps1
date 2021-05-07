@@ -133,14 +133,6 @@ try
 
     ForEach ($projectPath in $([System.IO.Directory]::GetFiles($testRoot, "*.csproj", [System.IO.SearchOption]::AllDirectories)))
     {
-Log-DebugLine "*****************************************"
-Log-DebugLine "projectPath: $projectPath"
-
-$tmp = [System.IO.Path]::GetDirectoryName($projectPath)
-
-Log-DebugLine "projectDir: $tmp"
-Log-DebugLine "*****************************************"
-
         $testProjects       += $projectPath
         $testProjectFolders += [System.IO.Path]::GetDirectoryName($projectPath)
     }
@@ -168,10 +160,6 @@ Log-DebugLine "*****************************************"
 
     ForEach ($projectPath in $testProjects)
     {
-Log-DebugLine "*****************************************"
-Log-DebugLine "projectPath: $projectPath"
-Log-DebugLine "dotnet test $projectPath --logger 'liquid.md' --no-restore --configuration $buildConfig $filterOption $testFilter"
-Log-DebugLine "*****************************************"
         dotnet test $projectPath --logger "liquid.md" --no-restore --configuration $buildConfig $filterOption $testFilter | Out-Null
         
         $success = $? -and $success
