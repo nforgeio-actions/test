@@ -93,10 +93,6 @@ try
             $repoPath     = "github.com/nforgeio/neonCLOUD"
             $solutionPath = [System.IO.Path]::Combine($env:NC_ROOT, "neonCLOUD.sln")
             $testRoot     = [System.IO.Path]::Combine($env:NC_ROOT, "Test")
-
-            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Cloud.Desktop")
-            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Enterprise.Kube")
-            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.nuget-versioner")
         }
           
         "neonKUBE"
@@ -104,24 +100,6 @@ try
             $repoPath     = "github.com/nforgeio/neonKUBE"
             $solutionPath = [System.IO.Path]::Combine($env:NF_ROOT, "neonKUBE.sln")
             $testRoot     = [System.IO.Path]::Combine($env:NF_ROOT, "Test")
-
-            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Cadence")
-            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Cassandra")
-            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Common")
-            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Couchbase")
-            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Cryptography")
-            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Deployment")
-            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Identity")
-            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Kube")
-            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.ModelGen")
-            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.ModelGenCli")
-            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Postgres")
-            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Service")
-            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Temporal")
-            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Web")
-            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Xunit")
-            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.YugaByte")
-            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.NeonCli")
         }
           
         "neonLIBRARY"
@@ -174,20 +152,13 @@ try
     if (![System.String]::IsNullOrEmpty($testFilter))
     {
         $filterOption = "--filter"
-
-        # We need to escape some filter operators for CMD.EXE:
-
-        $escapedFilter = $testFilter
-        $escapedFilter = $escapedFilter.Replace("&", "\&")
-        $escapedFilter = $escapedFilter.Replace("|", "\|")
-        $escapedFilter = $escapedFilter.Replace("!", "\!")
     }
 
     $success = $true
 
     ForEach ($projectPath in $testProjects)
     {
-        dotnet test $projectPath --logger "liquid.md" --configuration $buildConfig $filterOption $escapedFilter | Out-Null
+        dotnet test $projectPath --logger "liquid.md" --no-restore --configuration $buildConfig $filterOption $filter | Out-Null
         
         $success = $? -and $success
     }
@@ -229,7 +200,6 @@ try
             return  # No results for this test project
         }
 
-        
         Copy-Item -Path $projectResultFiles[0] -Destination $([System.IO.Path]::Combine($resultsFolder, "$projectName.md"))
 
         $projectsWithResults.Add($projectName, "true")
@@ -280,7 +250,7 @@ try
         $utcNow            = [System.DateTime]::UtcNow
         $minRetainTime     = $utcNow.Date - $(New-TimeSpan -Days $retentionDays)
 
-        ForEach ($testResultPath in [System.IO.Directory]::GetFiles($testResultsRepoFolder, "*.md"))
+        ForEach ($testResultPath in $([System.IO.Directory]::GetFiles($testResultsRepoFolder, "*.md")))
         {
             # Extract and parse the timestamp.
 
