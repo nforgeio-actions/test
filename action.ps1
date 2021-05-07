@@ -168,6 +168,9 @@ Log-DebugLine "*****************************************"
 
     ForEach ($projectPath in $testProjects)
     {
+Log-DebugLine "*****************************************"
+Log-DebugLine "dotnet test $projectPath --logger 'liquid.md' --no-restore --configuration $buildConfig $filterOption $filter"
+Log-DebugLine "*****************************************"
         dotnet test $projectPath --logger "liquid.md" --no-restore --configuration $buildConfig $filterOption $filter | Out-Null
         
         $success = $? -and $success
@@ -192,10 +195,11 @@ Log-DebugLine "*****************************************"
         [CmdletBinding()]
         param (
             [Parameter(Position=0, Mandatory=$true)]
-            [string]$projectFolder
+            [string]$projectPath
         )
 
-        $projectName          = [System.IO.Path]::GetFileName($projectFolder)
+        $projectName          = [System.IO.Path]::GetFileName($projectPath)
+        $projectFolder        = [System.IO.Path]::GetDirectoryName($projectPath)
         $projectResultsFolder = [System.IO.Path]::Combine($projectFolder, "TestResults")
         
         if (![System.IO.Directory]::Exists($projectResultsFolder))
@@ -215,9 +219,9 @@ Log-DebugLine "*****************************************"
         $projectsWithResults.Add($projectName, "true")
     }
 
-    ForEach ($projectFolder in $testProjectFolders)
+    ForEach ($projectPath in $testProjects)
     {
-        RenameAndCopy $projectFolder
+        RenameAndCopy $projectPath
     }
 
     # We're using the [nforgeio/test-results] repo to hold the test results so
