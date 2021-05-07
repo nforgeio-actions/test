@@ -198,7 +198,7 @@ try
     #       from the project.
     #
     #       RenameAndCopy() will build a map with the projects that
-    #       have acutally has results for user further below.
+    #       have actually has results for use further below.
 
     $projectsWithResults = @{}
 
