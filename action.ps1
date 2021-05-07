@@ -81,14 +81,6 @@ try
     $workflowUri    = Get-ActionWorkflowUri
     $workflowRunUri = Get-ActionWorkflowRunUri
 
-    # Determine the solution path for the repo as well as the paths to
-    # test project folders.
-    
-    # NOTE: These lists will need to be manually maintained as
-    #       test projects are added or deleted.
-    
-    $testProjectFolders = @()
-
     Switch ($repo)
     {
         ""
@@ -102,9 +94,9 @@ try
             $solutionPath = [System.IO.Path]::Combine($env:NC_ROOT, "neonCLOUD.sln")
             $testRoot     = [System.IO.Path]::Combine($env:NC_ROOT, "Test")
 
-            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Cloud.Desktop")
-            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Enterprise.Kube")
-            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.nuget-versioner")
+            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Cloud.Desktop")
+            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Enterprise.Kube")
+            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.nuget-versioner")
         }
           
         "neonKUBE"
@@ -113,27 +105,23 @@ try
             $solutionPath = [System.IO.Path]::Combine($env:NF_ROOT, "neonKUBE.sln")
             $testRoot     = [System.IO.Path]::Combine($env:NF_ROOT, "Test")
 
-            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Cadence")
-            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Cadence.net")
-            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Cassandra")
-            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Common")
-            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Common.net")
-            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Couchbase")
-            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Cryptography")
-            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Cryptography.net")
-            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Deployment")
-            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Identity")
-            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Kube")
-            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.ModelGen")
-            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.ModelGenCli")
-            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Postgres")
-            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Service")
-            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Temporal")
-            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Temporal.net")
-            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Web")
-            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.Xunit")
-            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.Neon.YugaByte")
-            $testProjectFolders += [System.IO.Path]::Combine($testRoot, "Test.NeonCli")
+            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Cadence")
+            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Cassandra")
+            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Common")
+            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Couchbase")
+            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Cryptography")
+            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Deployment")
+            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Identity")
+            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Kube")
+            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.ModelGen")
+            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.ModelGenCli")
+            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Postgres")
+            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Service")
+            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Temporal")
+            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Web")
+            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.Xunit")
+            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.Neon.YugaByte")
+            $testProjects += [System.IO.Path]::Combine($testRoot, "Test.NeonCli")
         }
           
         "neonLIBRARY"
@@ -157,9 +145,21 @@ try
         }
     }
 
+    # Determine the solution path for the repo as well as the paths to
+    # test project files.  This assumes that all tests are located at:
+    #
+    #       $/Test/**
+        
+    $testProjects = @()
+
+    ForEach ($path in [System.IO.Directory]::GetFiles($testRoot), "*.csproj", [System.IO.SearchOption]::AllDirectories))
+    {
+        $testProjects += $path
+    }
+
     # Delete all of the project test result folders.
 
-    ForEach ($projectFolder in $testProjectFolders)
+    ForEach ($projectFolder in $testProjects)
     {
         $projectResultFolder = [System.IO.Path]::Combine($projectFolder, "TestResults")
 
@@ -168,8 +168,6 @@ try
             [System.IO.Directory]::Delete($projectResultFolder, $true)
         }
     }
-
-    # Run the solution tests.
 
     $filterOption = ""
 
@@ -185,8 +183,14 @@ try
         $escapedFilter = $escapedFilter.Replace("!", "\!")
     }
 
-    dotnet test $solutionPath --logger "liquid.md" --configuration $buildConfig $filterOption $escapedFilter | Out-Null
-    $success = $?
+    $success = $true
+
+    ForEach ($projectPath in $testProjects)
+    {
+        dotnet test $projectPath --logger "liquid.md" --configuration $buildConfig $filterOption $escapedFilter | Out-Null
+        
+        $success = $? -and $success
+    }
 
     # Copy all of the test results from the folders where they were
     # generated to the results folder passed to the action.  There should
@@ -231,7 +235,7 @@ try
         $projectsWithResults.Add($projectName, "true")
     }
 
-    ForEach ($projectFolder in $testProjectFolders)
+    ForEach ($projectFolder in $testProjects)
     {
         RenameAndCopy $projectFolder
     }
