@@ -141,7 +141,7 @@ $tmp = [System.IO.Path]::GetDirectoryName($projectPath)
 Log-DebugLine "projectDir: $tmp"
 Log-DebugLine "*****************************************"
 
-        $testProjects       += $path
+        $testProjects       += $projectPath
         $testProjectFolders += [System.IO.Path]::GetDirectoryName($projectPath)
     }
 
