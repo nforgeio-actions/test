@@ -126,7 +126,7 @@ try
     # Determine the solution path for the repo as well as the paths to
     # test project files.  This assumes that all tests are located at:
     #
-    #       $/Test/**
+    #       $/Test/**/*.csproj
         
     $testProjects       = @()
     $testProjectFolders = @()
