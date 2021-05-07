@@ -194,7 +194,7 @@ try
     # rename each file to: PROJECT-NAME.md.
     #
     # NOTE: It's possible that there will be no results file for a 
-    #       project when a specified filter filters-out all tests
+    #       project when the specified filter filters-out all tests
     #       from the project.
     #
     #       RenameAndCopy() will build a map with the projects that
