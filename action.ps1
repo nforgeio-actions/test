@@ -130,7 +130,7 @@ try
         
     $testProjects = @()
 
-    ForEach ($path in [System.IO.Directory]::GetFiles($testRoot), "*.csproj", [System.IO.SearchOption]::AllDirectories))
+    ForEach ($path in $([System.IO.Directory]::GetFiles($testRoot), "*.csproj", [System.IO.SearchOption]::AllDirectories)))
     {
         $testProjects += $path
     }
