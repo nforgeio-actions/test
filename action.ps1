@@ -323,8 +323,8 @@ try
                 $resultInfo         += ";"
             }
 
-            $resultMarkdownUris += "[details](https://github.com/nforgeio/artifacts/blob/master/results/$timestamp-$projectName.md)"
-            $resultHtmlUris     += "<a href=`"https://github.com/nforgeio/artifacts/blob/master/results/$timestamp-$projectName.md`">details</a>"
+            $resultMarkdownUris += "[details](https://github.com/nforgeio/artifacts/blob/master/test/$timestamp-$projectName.md)"
+            $resultHtmlUris     += "<a href=`"https://github.com/nforgeio/artifacts/blob/master/test/$timestamp-$projectName.md`">details</a>"
 
             # $hack(jefflill):
             #
