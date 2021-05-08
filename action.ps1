@@ -24,7 +24,7 @@
 #       https://github.com/kurtmkurtm/LiquidTestReports
 
 $ncRoot = $env:NC_ROOT
-$ntRoot = $env:NT_ROOT
+$naRoot = $env:NA_ROOT
 
 if ([System.String]::IsNullOrEmpty($ncRoot) -or ![System.IO.Directory]::Exists($ncRoot))
 {
@@ -214,11 +214,11 @@ try
         RenameAndCopy $projectPath
     }
 
-    # We're using the [nforgeio/test-results] repo to hold the test results so
+    # We're using the [nforgeio/artifacts] repo to hold the test results so
     # we can include result links in notifications.  The nice thing about using
     # a GitHub repo for this is that GitHub will handle the markdown translation
     # automatically and GitHub also handles security.  Test results are persisted
-    # to the [$/reults] folder and will be named like:
+    # to the [$/test] folder and will be named like:
     # 
     #       yyyy-MM-ddThh_mm_ssZ-NAME.md
     #
@@ -226,35 +226,33 @@ try
     #
     # We're also going to remove files with timestamps older than the integer
     # value from [$/setting-retention-days] to keep a lid on the number of 
-    # files that need to be pulled (note that the history will always grow).
+    # files that need to be pulled (although the repo history will always grow).
 
-    $testResultsFolder = [System.IO.Path]::Combine($ntRoot, "results")
+    $testResultsFolder = [System.IO.Path]::Combine($naRoot, "test")
 
-    if ([System.String]::IsNullOrEmpty($ntRoot) -or ![System.IO.Directory]::Exists($ntRoot))
+    if ([System.String]::IsNullOrEmpty($naRoot) -or ![System.IO.Directory]::Exists($naRoot))
     {
-        throw "[test-results] repo is not configured locally."
+        throw "[artifacts] repo is not configured locally."
     }
 
-    Push-Location $ntRoot
+    # Ensure that the [test] folder exists in the [artifacts] repo.
 
-        # Ensure that the [results] folder exists in the [test-results] repo.
+    [System.IO.Directory]::CreateDirectory($testResultsFolder)
 
-        $testResultsRepoFolder = [System.IO.Path]::Combine($ntRoot, "results")
+    Push-Location $naRoot
 
-        [System.IO.Directory]::CreateDirectory($testResultsRepoFolder)
-
-        # Pull the [test-results] repo and then scan the test results file and remove
+        # Pull the [artifacts] repo and then scan the test results file and remove
         # those with timestamps older than [$/setting-retention-days].
 
         git pull
         ThrowOnExitCode
 
-        $retentionDaysPath = [System.IO.Path]::Combine($ntRoot, "setting-retention-days")
+        $retentionDaysPath = [System.IO.Path]::Combine($naRoot, "setting-retention-days")
         $retentionDays     = [int][System.IO.File]::ReadAllText($retentionDaysPath).Trim()
         $utcNow            = [System.DateTime]::UtcNow
         $minRetainTime     = $utcNow.Date - $(New-TimeSpan -Days $retentionDays)
 
-        ForEach ($testResultPath in $([System.IO.Directory]::GetFiles($testResultsRepoFolder, "*.md")))
+        ForEach ($testResultPath in $([System.IO.Directory]::GetFiles($testResultsFolder, "*.md")))
         {
             # Extract and parse the timestamp.
 
@@ -282,7 +280,7 @@ try
 
         $sortedResultPaths = $($sortedResultPaths | Sort-Object)
 
-        # Copy the project test results into the [results] folder in the [test-results] repo,
+        # Copy the project test results into the [results] folder in the [artifacts] repo,
         # renaming the files to be like: 
         #
         #       yyyy-MM-ddThh_mm_ssZ-NAME.md
@@ -311,7 +309,7 @@ try
             # [$resultMarkdownUris] and [$resultInfo] will be returned as outputs to be consumed by
             # subsequent [nforgeio-actions/teams-notify-test] step.  [result-uris] will be set to
             # the semicolon list of markdown formatted URIs to the test results as the well appear
-            # in the [nforgeio/test-results] repo.
+            # in the [nforgeio/artifacts] repo.
             #
             # [result-summaries] will return as a semicolon separated list of summaries with the
             # same order as [result-uris].  Each summary holds the total number of tests, failures 
@@ -325,8 +323,8 @@ try
                 $resultInfo         += ";"
             }
 
-            $resultMarkdownUris += "[details](https://github.com/nforgeio/test-results/blob/master/results/$timestamp-$projectName.md)"
-            $resultHtmlUris     += "<a href=`"https://github.com/nforgeio/test-results/blob/master/results/$timestamp-$projectName.md`">details</a>"
+            $resultMarkdownUris += "[details](https://github.com/nforgeio/artifacts/blob/master/results/$timestamp-$projectName.md)"
+            $resultHtmlUris     += "<a href=`"https://github.com/nforgeio/artifacts/blob/master/results/$timestamp-$projectName.md`">details</a>"
 
             # $hack(jefflill):
             #
@@ -380,7 +378,7 @@ try
             $resultInfo += "$projectName,$totalTests,$errorTests,$skipTests,$elapsed"
         }
 
-        # Commit and push any [test-results] repo changes.
+        # Commit and push any [artifacts] repo changes.
 
         if ($sortedResultPaths.Length -gt 0)
         {
