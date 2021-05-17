@@ -241,32 +241,10 @@ try
 
     Push-Location $naRoot
 
-        # Pull the [artifacts] repo and then scan the test results file and remove
-        # those with timestamps older than [$/setting-retention-days].
+        # Pull the [artifacts] repo
 
         git pull
         ThrowOnExitCode
-
-        $retentionDaysPath = [System.IO.Path]::Combine($naRoot, "setting-retention-days")
-        $retentionDays     = [int][System.IO.File]::ReadAllText($retentionDaysPath).Trim()
-        $utcNow            = [System.DateTime]::UtcNow
-        $minRetainTime     = $utcNow.Date - $(New-TimeSpan -Days $retentionDays)
-
-        ForEach ($testResultPath in $([System.IO.Directory]::GetFiles($testResultsFolder, "*.md")))
-        {
-            # Extract and parse the timestamp.
-
-            $filename   = [System.IO.Path]::GetFileName($testResultPath)
-            $timestring = $filename.SubString(0, 20)        # Extract the "yyyy-MM-ddThh_mm_ssZ" part
-            $timeString = $timeString.Replace("_", ":")     # Convert to: "yyyy-MM-ddThh:mm:ssZ"
-            $timestamp  = [System.DateTime]::ParseExact($timeString, "yyyy-MM-ddThh:mm:ssZ", $([System.Globalization.CultureInfo]::InvariantCulture)).ToUniversalTime()
-
-            if ($timestamp -lt $minRetainTime)
-            {
-                Write-ActionOutput "*** expired: $testResultPath"
-                [System.IO.File]::Delete($testResultPath)
-            }
-        }
 
         # List the files in the results folder and created an array with the sorted file paths.
         # We're sorting here so the [nforgeio-actions/teams-notify-test] action won't have to.
@@ -280,7 +258,7 @@ try
 
         $sortedResultPaths = $($sortedResultPaths | Sort-Object)
 
-        # Copy the project test results into the [results] folder in the [artifacts] repo,
+        # Copy the project test results into the [test] folder in the [artifacts] repo,
         # renaming the files to be like: 
         #
         #       yyyy-MM-ddThh_mm_ssZ-NAME.md
