@@ -33,9 +33,9 @@ if ([System.String]::IsNullOrEmpty($ncRoot) -or ![System.IO.Directory]::Exists($
 
 $ncPowershell = [System.IO.Path]::Combine($ncRoot, "Powershell")
 
-Push-Location $ncPowershell
+Push-Cwd $ncPowershell
 . ./includes.ps1
-Pop-Location
+Pop-Cwd
 
 # Perform the operation.  Note that we're assuming that a code build has already been
 # performed for the Release configuration via a previous [nforgeio-actions/build] 
@@ -75,7 +75,7 @@ try
         [System.IO.File]::Delete($resultsFolder)
     }
 
-    [System.IO.Directory]::CreateDirectory($resultsFolder)
+    [System.IO.Directory]::CreateDirectory($resultsFolder) | Out-Null
 
     # Fetch the workflow and run run URIs.
 
@@ -237,9 +237,9 @@ try
 
     # Ensure that the [test] folder exists in the [artifacts] repo.
 
-    [System.IO.Directory]::CreateDirectory($testResultsFolder)
+    [System.IO.Directory]::CreateDirectory($testResultsFolder) | Out-Null
 
-    Push-Location $naRoot
+    Push-Cwd $naRoot
 
         # Pull the [artifacts] repo
 
@@ -370,7 +370,7 @@ try
             ThrowOnExitCode
         }
 
-    Pop-Location
+    Pop-Cwd
     
     #--------------------------------------------------------------------------
     # Create a new issue or append a comment to an existing one when there
