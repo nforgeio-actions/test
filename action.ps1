@@ -33,9 +33,9 @@ if ([System.String]::IsNullOrEmpty($ncRoot) -or ![System.IO.Directory]::Exists($
 
 $ncPowershell = [System.IO.Path]::Combine($ncRoot, "Powershell")
 
-Push-Cwd $ncPowershell
+Push-Location $ncPowershell
 . ./includes.ps1
-Pop-Cwd
+Pop-Location
 
 # Perform the operation.  Note that we're assuming that a code build has already been
 # performed for the Release configuration via a previous [nforgeio-actions/build] 
