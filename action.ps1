@@ -243,7 +243,10 @@ try
 
         # Pull the [artifacts] repo
 
-        Invoke-CaptureStreams "git pull --quiet"
+        Invoke-CaptureStreams "git reset --quiet --hard" | Out-Null
+        Invoke-CaptureStreams "git fetch --quiet" | Out-Null
+        Invoke-CaptureStreams "git checkout --quiet master" | Out-Null    
+        Invoke-CaptureStreams "git pull --quiet" | Out-Null
 
         # List the files in the results folder and created an array with the sorted file paths.
         # We're sorting here so the [nforgeio-actions/teams-notify-test] action won't have to.
@@ -359,9 +362,9 @@ try
 
         if ($sortedResultPaths.Length -gt 0)
         {
-            Invoke-CaptureStreams "git add --all"
-            Invoke-CaptureStreams "git commit --quiet --all --message `"test[$repo]: $timestamp`""
-            Invoke-CaptureStreams "git push --quiet"
+            Invoke-CaptureStreams "git add --all" | Out-Null
+            Invoke-CaptureStreams "git commit --quiet --all --message `"test[$repo]: $timestamp`"" | Out-Null
+            Invoke-CaptureStreams "git push --quiet" | Out-Null
         }
 
     Pop-Cwd | Out-Null
