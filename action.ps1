@@ -272,6 +272,7 @@ try
         # test result URIs for the [result-uris] output along with the matching String
         # with test result summaries for the [result-summaries] output.
 
+        $utcNow             = [System.DateTime]::UtcNow
         $timestamp          = $utcNow.ToString("yyyy-MM-ddThh_mm_ssZ")
         $resultMarkdownUris = ""
         $resultHtmlUris     = @()
