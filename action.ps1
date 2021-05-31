@@ -359,7 +359,7 @@ try
 
         if ($sortedResultPaths.Length -gt 0)
         {
-            Invoke-CaptureStreams "git add --quiet --all"
+            Invoke-CaptureStreams "git add --all"
             Invoke-CaptureStreams "git commit --quiet --all --message `"test[$repo]: $timestamp`""
             Invoke-CaptureStreams "git push --quiet"
         }
