@@ -415,7 +415,7 @@ try
             }
         }
 
-        $body =
+        $issueBody =
 @'
 <table>
 <tr>
@@ -482,13 +482,13 @@ try
             $filter = "-na-"
         }
 
-        $body = $body.Replace("@build-branch", $buildBranch)
-        $body = $body.Replace("@build-config", $buildConfig)
-        $body = $body.Replace("@test-filter", $filter)
-        $body = $body.Replace("@build-commit", $buildCommit)
-        $body = $body.Replace("@runner", $runner)
-        $body = $body.Replace("@workflow-run-uri", $workflowRunUri)
-        $body = $body.Replace("@workflow-uri", $workflowUri)
+        $issueBody = $issueBody.Replace("@build-branch", $buildBranch)
+        $issueBody = $issueBody.Replace("@build-config", $buildConfig)
+        $issueBody = $issueBody.Replace("@test-filter", $filter)
+        $issueBody = $issueBody.Replace("@build-commit", $buildCommit)
+        $issueBody = $issueBody.Replace("@runner", $runner)
+        $issueBody = $issueBody.Replace("@workflow-run-uri", $workflowRunUri)
+        $issueBody = $issueBody.Replace("@workflow-uri", $workflowUri)
 
         # Add details for each test project.
 
@@ -542,14 +542,14 @@ try
             $resultFacts += $factTemplate
         }
 
-        $body = $body.Replace("@result-facts", $resultFacts)
+        $issueBody = $issueBody.Replace("@result-facts", $resultFacts)
 
         # Create the new issue or append to an existing one with the 
         # same author, append label, and title.
 
         $issueUri = New-GitHubIssue -Repo           $repoPath `
                                     -Title          $issueTitle `
-                                    -Body           $body `
+                                    -Body           $issueBody `
                                     -AppendLabel    $issueAppendLabel `
                                     -Labels         $labels `
                                     -Assignees      $issueAssignees `
