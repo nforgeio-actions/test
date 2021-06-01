@@ -472,7 +472,7 @@ try
             $buildCommit = "-na-"
         }
 
-        $runner = $env:COMPUTERNAME
+        $runner = Get-ProfileValue "runner.name"
         $runner = $runner.ToUpper()
 
         $filter = $testFilter
