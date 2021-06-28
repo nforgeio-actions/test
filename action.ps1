@@ -365,7 +365,23 @@ try
         {
             Invoke-CaptureStreams "git add --all" | Out-Null
             Invoke-CaptureStreams "git commit --quiet --all --message `"test[$repo]: $timestamp`"" | Out-Null
-            Invoke-CaptureStreams "git push --quiet" | Out-Null
+
+            # $todo(jefflill):
+            #
+            # It's possible that another workflow has pushed changes to the
+            # repo since we pulled above.  We'll detect this situation (once) and 
+            # re-pull the repo before trying again.
+            #
+            # It would be nicer to abstract these repo operations into a couple 
+            # Powershell functions.
+
+            $result = Invoke-CaptureStreams "git push --quiet" -interleave -nocheck
+
+            if ($result.exitcode -eq 1 -and $result.stderr.Contains("[rejected]") -and $result.stderr.Contains("(fetch first)"))
+            {
+                Invoke-CaptureStreams "git pull --quiet" | Out-Null
+                Invoke-CaptureStreams "git push --quiet" | Out-Null
+            }
         }
 
     Pop-Cwd | Out-Null
