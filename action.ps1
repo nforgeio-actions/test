@@ -396,6 +396,10 @@ try
         {
             $issueTitle = "Automated tests failed!"
         }
+        else
+        {
+            $issueTitle = "FAILED: $issueTitle"
+        }
 
         $assignees = @()
 
