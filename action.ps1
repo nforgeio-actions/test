@@ -56,6 +56,7 @@ $issueAssignees   = Get-ActionInput "issue-assignees"    $false
 $issueLabels      = Get-ActionInput "issue-labels"       $false
 $issueAppendLabel = Get-ActionInput "issue-append-label" $false
 
+Log-DebugLine "test 0:"
 if ($buildConfig -ne "release")
 {
     $buildConfig = "debug"
@@ -68,7 +69,7 @@ try
         throw "Runner Config: neonCLOUD repo is not present."
     }
 
-    # Delete any existing test results folder and then create a fresh folder.
+    # Delete any existing test result folder and then create a fresh folder.
       
     if ([System.IO.File]::Exists($resultsFolder))
     {
@@ -123,6 +124,7 @@ try
             throw "[$repo] is not a supported repo."
         }
     }
+Log-DebugLine "test 1:"
 
     # Determine the solution path for the repo as well as the paths to
     # test project files.  This assumes that all tests are located at:
@@ -138,6 +140,7 @@ try
         $testProjectFolders += [System.IO.Path]::GetDirectoryName($projectPath)
     }
 
+Log-DebugLine "test 2:"
     # Delete all of the project test result folders.
 
     ForEach ($projectFolder in $testProjectFolders)
@@ -150,26 +153,104 @@ try
         }
     }
 
+Log-DebugLine "test 3:"
+    # Configure the test options.
+
     $filterOption = ""
 
     if (![System.String]::IsNullOrEmpty($testFilter))
     {
-        $filterOption = "--filter"
+        $filterOption = "--filter $testFilter"
     }
+Log-DebugLine "test 4:"
 
     $success = $true
 
+    # Execute the test for each target framework.  Note that we're going to
+    # write the test results to:
+    #
+    #       PROJECTDIR\TestResults\TARGETFRAMEWORK\PROJECTNAME.md
+    #
+    # so that test runs won't overwrite results for a previous target framework.
+
     ForEach ($projectPath in $testProjects)
     {
-        dotnet test $projectPath --logger "liquid.md" --no-restore --configuration $buildConfig $filterOption $testFilter | Out-Null
+Log-DebugLine "test 5: $projectPath"        
+        # Read the project file to retrieve the target frameworks.
+
+        $projectFile      = [System.IO.File]::ReadAllText($projectPath)
+        $targetFrameworks = @()
+
+        $results = [regex]::Matches($projectFile, "<TargetFramework>(?<framework>.+)</TargetFramework>")
+
+Log-DebugLine "test 6: ${results.Count}"
+        if ($results.Count -ne 0)
+        {
+Log-DebugLine "test 7:"
+            # The CSPROJ specifies: <TargetFramework>...</TargetFramework>
+
+            $targetFramework = $results[0].Groups["framework"].Value
+
+            if (![string]::IsNullOrWhitespace($targetFramework))
+            {
+Log-DebugLine "test 8:"                
+                $targetFrameworks += $targetFramework
+            }
+        }
+        else
+        {
+Log-DebugLine "test 9:"
+            $results = [regex]::Matches($projectFile, "<TargetFrameworks>(?<frameworks>.+)</TargetFrameworks>")
+
+Log-DebugLine "test 10: ${results.Count}"
+            if ($results.Count -ne 0)
+            {
+                # The CSPROJ specifies: <TargetFrameworks>...</TargetFrameworks>
+
+                $targetFrameworks = $results[0].Groups["frameworks"].Value
+
+                if (![string]::IsNullOrWhitespace($targetFrameworks))
+                {
+Log-DebugLine "test 11:"                    
+                    # Target frameworks are separated by semicolons.
+
+                    $targetFrameworks = $test.Split(';', [System.StringSplitOptions]::TrimEntries -bor [System.StringSplitOptions]::RemoveEmptyEntries)
+
+                    foreach ($item in $targetFrameworks)
+                    {
+Log-DebugLine "test 12: $item"
+                        $targetFrameworks += $item
+                    }
+                }
+            }
+        }
+Log-DebugLine "test 13:"        
+
+        foreach ($targetFramework in $targetFrameworks)
+        {
+Log-DebugLine "test 14: $targetFramework"            
+            $projectFolder = [System.IO.Path]::GetDirectoryName($projectPath)
+            $resultsFolder = [System.IO.Path]::Combine($projectPath, $targetFramework)
+
+Log-DebugLine "test 15: $resultsFolder"            
+            [System.IO.Directory]::CreatDirectory($resultsFolder)
+
+            dotnet test $projectPath --logger "liquid.md" --no-restore --configuration $buildConfig $filterOption $testFilter --output $resultsFolder | Out-Null
         
-        $success = $? -and $success
+            $success = $? -and $success
+Log-DebugLine "test 16: $success"            
+        }
+Log-DebugLine "test 17:"        
     }
+Log-DebugLine "test 18:"    
 
     # Copy all of the test results from the folders where they were
-    # generated to the results folder passed to the action.  There should
-    # only be one results file in each directory and we're going to 
-    # rename each file to: PROJECT-NAME.md.
+    # generated to the results folder passed to the action.  
+    #
+    # We're expecting the results folder to have subfolders named for 
+    # the targetframework specified for the run.  There should be
+    # only be one results file in each sibfolder and we're going to 
+    # rename each file to: PROJECT-NAME.FRAMEWORK.md.
     #
     # NOTE: It's possible that there will be no results file for a 
     #       project when the specified filter filters-out all tests
@@ -188,31 +269,49 @@ try
             [string]$projectPath
         )
 
+Log-DebugLine "test 19: $projectPath"
+
         $projectName          = [System.IO.Path]::GetFileName($projectPath)
         $projectFolder        = [System.IO.Path]::GetDirectoryName($projectPath)
         $projectResultsFolder = [System.IO.Path]::Combine($projectFolder, "TestResults")
+Log-DebugLine "test 20 $projectResultsFolder"
         
         if (![System.IO.Directory]::Exists($projectResultsFolder))
         {
             return  # No results for this test project
         }
 
-        $projectResultFiles = [System.IO.Directory]::GetFiles($projectResultsFolder, "*.md")
+        $projectResultFiles = [System.IO.Directory]::GetFiles($projectResultsFolder, "*.md", [System.IO.SearchOption]::AllDirectories)
 
         if ($projectResultFiles.Length -eq 0)
         {
+Log-DebugLine "test 21:"
             return  # No results for this test project
         }
+Log-DebugLine "test 22:"
 
-        Copy-Item -Path $projectResultFiles[0] -Destination $([System.IO.Path]::Combine($resultsFolder, "$projectName.md"))
+        foreach ($resultPath in $projectResultFiles)
+        {
+Log-DebugLine "test 23: $resultPath"
+            # Extract the targetframework from the result path.  This is name of
+            # the directory holding the result file.
+
+            $targetFramework = [System.IO.Path]::GetDirectoryName($resultPath)
+            $targetFramework = [System.IO.Path]::GetFileName($targetFramework)
+
+Log-DebugLine "test 24: $resultPath --> $projectName.$targetFramework.md"            
+            Copy-Item -Path $resultPath -Destination $([System.IO.Path]::Combine($resultsFolder, "$projectName.$targetFramework.md"))
+        }
 
         $projectsWithResults.Add($projectName, "true")
     }
 
+Log-DebugLine "test 25:"
     ForEach ($projectPath in $testProjects)
     {
         RenameAndCopy $projectPath
     }
+Log-DebugLine "test 26:"    
 
     # We're using the [nforgeio/artifacts] repo to hold the test results so
     # we can include result links in notifications.  The nice thing about using
@@ -235,6 +334,7 @@ try
         throw "[artifacts] repo is not configured locally."
     }
 
+Log-DebugLine "test 27:"
     # Ensure that the [test] folder exists in the [artifacts] repo.
 
     [System.IO.Directory]::CreateDirectory($testResultsFolder) | Out-Null
@@ -385,7 +485,8 @@ try
         }
 
     Pop-Cwd | Out-Null
-    
+
+Log-DebugLine "test 28:"    
     #--------------------------------------------------------------------------
     # Create a new issue or append a comment to an existing one when there
     # are test failures and when the issue repo is passed.
@@ -596,9 +697,11 @@ try
     {
         Set-ActionOutput "success" "false"
     }
+Log-DebugLine "test 29:"
 }
 catch
 {
+Log-DebugLine "test 30:"
     Write-ActionException $_
     Set-ActionOutput "success" "false"
     exit 1
