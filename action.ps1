@@ -233,7 +233,7 @@ Log-DebugLine "test 14: $targetFramework"
             $resultsFolder = [System.IO.Path]::Combine($projectPath, $targetFramework)
 
 Log-DebugLine "test 15: $resultsFolder"            
-            [System.IO.Directory]::CreatDirectory($resultsFolder)
+            [System.IO.Directory]::CreateDirectory($resultsFolder)
 
             dotnet test $projectPath --logger "liquid.md" --no-restore --configuration $buildConfig $filterOption $testFilter --output $resultsFolder | Out-Null
         
