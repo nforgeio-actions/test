@@ -507,7 +507,7 @@ Log-DebugLine "test 27D: targetPath:     $targetPath"
             # This script writes a [.framework] file specifying the target framework
             # to the test results folder.  We need to load that into $framework.
 
-            $framework = [System.IO.File]::ReadAllText([System.IO.Path]::Combine($testResultPath, ".framework"))
+            $framework = [System.IO.File]::ReadAllText([System.IO.Path]::Combine($testResultPath, "..", ".framework"))
 
             # Build the result information string for this test result.  This will be passed
             # to the [notify-test] and used for generating a nice summary.
