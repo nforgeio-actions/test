@@ -387,12 +387,48 @@ Log-DebugLine "test 27:"
 
         ForEach ($testResultPath in $sortedResultPaths)
         {
-            $resultFolder = [System.IO.Path]::GetDirectoryName($testResultPath)
-            $projectName  = [System.IO.Path]::GetFileNameWithoutExtension($resultFolder)
-            $targetPath   = [System.IO.path]::Combine($testResultsFolder, "$timestamp-$projectName.md")
-Log-DebugLine "test 27A: resultFolder: $resultFolder"
-Log-DebugLine "test 27B: projectName:  $projectName"
-Log-DebugLine "test 27C: targetPath:   $targetPath"
+Log-DebugLine "test 27A: testResultPath: $testResultPath"
+            # [$testResultPath] is going to look something like:
+            #
+            #   C:\src\neonKUBE\Test\Test.Neon.Cryptography\TestResults\net48\Test.Neon.Cryptography.net48.md
+            #
+            # We need to extract the project name and target framework from
+            # the path segments.  The project name is the segment before
+            # "TestResults" and the framework is the segment afterwards.
+
+            $pathSegments     = $testResultPath.Split('\')
+            $testResultsIndex = -1
+
+            for ($i = 0; $i -le $pathSegments.Length; $i++)
+            {
+                if ($pathSegments[$i] -eq "TestResults")
+                {
+                    $testResultsIndex = $i;
+                    break
+                }
+            }
+
+            if ($i -eq -1)
+            {
+                throw "ERROR: Invalid result path [testResultPath].  [TestResults] segment not found."
+            }
+
+            if ($i -eq 0)
+            {
+                throw "ERROR: Invalid result path [testResultPath].  [TestResults] cannot be the first segment."
+            }
+
+            if ($i -eq $pathSegments.Length - 1)
+            {
+                throw "ERROR: Invalid result path [testResultPath].  [TestResults] cannot be the last segment."
+            }
+
+            $projectName = $pathSegments[$testResultsIndex - 1]
+            $framework   = $pathSegments[$testResultsIndex + 1]
+            $targetPath  = [System.IO.path]::Combine($testResultsFolder, "$timestamp-$projectName-$framework.md")
+Log-DebugLine "test 27B: projectName:    $projectName"
+Log-DebugLine "test 27C: framework:      $targetPath"
+Log-DebugLine "test 27D: targetPath:     $targetPath"
 
             Copy-Item -Path $testResultPath -Destination $targetPath
 
@@ -468,18 +504,10 @@ Log-DebugLine "test 27C: targetPath:   $targetPath"
                 }
             }
 
-            # This scripts writes a [.framework] file specifying the target framework
+            # This script writes a [.framework] file specifying the target framework
             # to the test results folder.  We need to load that into $framework.
 
             $framework = [System.IO.File]::ReadAllText([System.IO.Path]::Combine($testResultPath, ".framework"))
-
-            # The project name includes the target framework, formatted like:
-            #
-            #       Test.Neon.Cryptography.net5.0
-            #
-            # We need we need to remove the framework extension.
-
-            $projectName = $projectName.Replace(".$framework", "")
 
             # Build the result information string for this test result.  This will be passed
             # to the [notify-test] and used for generating a nice summary.
