@@ -240,8 +240,8 @@ Log-DebugLine "test 14: $targetFramework"
 Log-DebugLine "test 15: $resultsFolder"
             [System.IO.Directory]::CreateDirectory($resultsFolder)
 
-Log-DebugLine "test 15A: dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --output $resultsFolder"
-            # dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --output $resultsFolder | Out-Null
+Log-DebugLine "test 15A: dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --output $resultsFolder --results-directory $resultsFolder"
+            # dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --output $resultsFolder --results-directory $resultsFolder | Out-Null
 dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --output $resultsFolder *>> C:\Temp\log.txt 
         
             $success = $? -and $success
@@ -254,10 +254,10 @@ Log-DebugLine "test 18:"
     # Copy all of the test results from the folders where they were
     # generated to the results folder passed to the action.  
     #
-    # We're expecting the results folder to have subfolders named for 
-    # the targetframework specified for the run.  There should be
-    # only be one results file in each sibfolder and we're going to 
-    # rename each file to: PROJECT-NAME.FRAMEWORK.md.
+    # We're expecting the project results folder to have subfolders 
+    # named for the targetframework specified for the run.  There 
+    # should be only be one results file in each sibfolder and we're
+    # going to rename each file to: PROJECT-NAME.FRAMEWORK.md.
     #
     # NOTE: It's possible that there will be no results file for a 
     #       project when the specified filter filters-out all tests
