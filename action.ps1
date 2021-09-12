@@ -130,12 +130,19 @@ Log-DebugLine "test 1:"
     # test project files.  This assumes that all tests are located at:
     #
     #       $/Test/**/*.csproj
+    #
+    # Note that projects that include a [.no-test] file will be ignored.
         
     $testProjects       = @()
     $testProjectFolders = @()
 
     ForEach ($projectPath in $([System.IO.Directory]::GetFiles($testRoot, "*.csproj", [System.IO.SearchOption]::AllDirectories)))
     {
+        if ([System.IO.File]::Exists([System.IO.Path]::Combine($projectPath, ".no-tests")))
+        {
+            Continue
+        }
+
         $testProjects       += $projectPath
         $testProjectFolders += [System.IO.Path]::GetDirectoryName($projectPath)
     }
