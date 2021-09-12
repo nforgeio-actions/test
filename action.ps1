@@ -160,7 +160,7 @@ Log-DebugLine "test 3:"
 
     if (![System.String]::IsNullOrEmpty($testFilter))
     {
-        $filterOption = "--filter `"$testFilter`""
+        $filterOption = "--filter"
     }
 Log-DebugLine "test 4:"
 
@@ -235,9 +235,9 @@ Log-DebugLine "test 14: $targetFramework"
 Log-DebugLine "test 15: $resultsFolder"
             [System.IO.Directory]::CreateDirectory($resultsFolder)
 
-Log-DebugLine "test 15A: dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig $filterOption --output $resultsFolder"
+Log-DebugLine "test 15A: dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig $filterOption  `"$testFilter`" --output $resultsFolder"
             # dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig $filterOption --output $resultsFolder | Out-Null
-dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig $filterOption --output $resultsFolder *>> C:\Temp\log.txt 
+dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig $filterOption `"$testFilter`" --output $resultsFolder *>> C:\Temp\log.txt 
         
             $success = $? -and $success
 Log-DebugLine "test 16: $success"            
