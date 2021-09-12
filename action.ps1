@@ -143,6 +143,12 @@ Log-DebugLine "test 1:"
             Continue
         }
 
+# $debug(jefflill): DELETE THIS!
+if (!$projectPath.Contains("Test.Neon.Cryptography"))
+{
+    Continue
+}
+
         $testProjects       += $projectPath
         $testProjectFolders += [System.IO.Path]::GetDirectoryName($projectPath)
     }
