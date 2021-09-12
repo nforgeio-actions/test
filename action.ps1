@@ -383,8 +383,9 @@ Log-DebugLine "test 27:"
 
         ForEach ($testResultPath in $sortedResultPaths)
         {
-            $projectName = [System.IO.Path]::GetFileNameWithoutExtension($testResultPath)
-            $targetPath  = [System.IO.path]::Combine($testResultsFolder, "$timestamp-$projectName.md")
+            $resultFolder = [System.IO.Path]::GetDirectoryName($testResultPath)
+            $projectName  = [System.IO.Path]::GetFileNameWithoutExtension($testResultPath)
+            $targetPath   = [System.IO.path]::Combine($testResultsFolder, "$timestamp-$projectName.md")
 
             Copy-Item -Path $testResultPath -Destination $targetPath
 
@@ -396,10 +397,10 @@ Log-DebugLine "test 27:"
             # in the [nforgeio/artifacts] repo.
             #
             # [result-summaries] will return as a semicolon separated list of summaries with the
-            # same order as [result-uris].  Each summary holds the total number of tests, failures 
-            # and skips, formatted like:
+            # same order as [result-uris].  Each summary holds the total number of tests, failures, 
+            # skips and the target framework, formatted like:
             #
-            #       #tests,#errors,#skips
+            #       name,#tests,#errors,#skips,elapsed,framework
 
             if (![System.String]::IsNullOrEmpty($resultMarkdownUris))
             {
@@ -420,6 +421,7 @@ Log-DebugLine "test 27:"
             $errorTests = 0
             $skipTests  = 0
             $elapsed    = "-na-"
+            $framework  = "-na-"
 
             ForEach ($line in [System.IO.File]::ReadAllLines($testResultPath))
             {
@@ -459,7 +461,23 @@ Log-DebugLine "test 27:"
                 }
             }
 
-            $resultInfo += "$projectName,$totalTests,$errorTests,$skipTests,$elapsed"
+            # This scripts writes a [.framework] file specifying the target framework
+            # to the test results folder.  We need to load that into $framework.
+
+            $framework = [System.IO.File]::ReadAllText([System.IO.Path]::Combine($testResultPath, ".framework"))
+
+            # The project name includes the target framework, formatted like:
+            #
+            #       Test.Neon.Cryptography.net5.0
+            #
+            # We need we need to remove the framework extension.
+
+            $projectName = $projectName.Replace(".$framework", "")
+
+            # Build the result information string for this test result.  This will be passed
+            # to the [notify-test] and used for generating a nice summary.
+
+            $resultInfo += "$projectName,$totalTests,$errorTests,$skipTests,$elapsed,$framework"
         }
 
         # Commit and push any [artifacts] repo changes.
