@@ -160,7 +160,7 @@ Log-DebugLine "test 3:"
 
     if (![System.String]::IsNullOrEmpty($testFilter))
     {
-        $filterOption = "--filter $testFilter"
+        $filterOption = "--filter `"$testFilter`""
     }
 Log-DebugLine "test 4:"
 
