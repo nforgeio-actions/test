@@ -230,7 +230,7 @@ Log-DebugLine "test 13:"
         {
 Log-DebugLine "test 14: $targetFramework"            
             $projectFolder = [System.IO.Path]::GetDirectoryName($projectPath)
-            $resultsFolder = [System.IO.Path]::Combine($projectPath, $targetFramework)
+            $resultsFolder = [System.IO.Path]::Combine($projectFolder, $targetFramework)
 
 Log-DebugLine "test 15: $resultsFolder"            
             [System.IO.Directory]::CreateDirectory($resultsFolder)
