@@ -214,7 +214,7 @@ Log-DebugLine "test 10: ${results.Count}"
 Log-DebugLine "test 11:"                    
                     # Target frameworks are separated by semicolons.
 
-                    $targetFrameworks = $test.Split(';', [System.StringSplitOptions]::TrimEntries -bor [System.StringSplitOptions]::RemoveEmptyEntries)
+                    $targetFrameworks = $targetFrameworks.Split(';', [System.StringSplitOptions]::TrimEntries -bor [System.StringSplitOptions]::RemoveEmptyEntries)
 
                     foreach ($item in $targetFrameworks)
                     {
