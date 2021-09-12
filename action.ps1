@@ -326,7 +326,7 @@ Log-DebugLine "test 26:"
     # automatically and GitHub also handles security.  Test results are persisted
     # to the [$/test] folder and will be named like:
     # 
-    #       yyyy-MM-ddThh_mm_ssZ-NAME.md
+    #       yyyy-MM-ddTHH_mm_ssZ-NAME.md
     #
     # where NAME identifies the test project that generated the result file.
     #
@@ -370,7 +370,7 @@ Log-DebugLine "test 27:"
         # Copy the project test results into the [test] folder in the [artifacts] repo,
         # renaming the files to be like: 
         #
-        #       yyyy-MM-ddThh_mm_ssZ-NAME.md
+        #       yyyy-MM-ddTHH_mm_ssZ-NAME.md
         #
         # Note that we're using underscores here because colons aren't allowed in URLs
         # without being escaped and Windows doesn't allow them in file names.
@@ -380,7 +380,7 @@ Log-DebugLine "test 27:"
         # with test result summaries for the [result-summaries] output.
 
         $utcNow             = [System.DateTime]::UtcNow
-        $timestamp          = $utcNow.ToString("yyyy-MM-ddThh_mm_ssZ")
+        $timestamp          = $utcNow.ToString("yyyy-MM-ddTHH_mm_ssZ")
         $resultMarkdownUris = ""
         $resultHtmlUris     = @()
         $resultInfo         = ""
