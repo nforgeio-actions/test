@@ -388,8 +388,11 @@ Log-DebugLine "test 27:"
         ForEach ($testResultPath in $sortedResultPaths)
         {
             $resultFolder = [System.IO.Path]::GetDirectoryName($testResultPath)
-            $projectName  = [System.IO.Path]::GetFileNameWithoutExtension($testResultPath)
+            $projectName  = [System.IO.Path]::GetFileNameWithoutExtension($resultFolder)
             $targetPath   = [System.IO.path]::Combine($testResultsFolder, "$timestamp-$projectName.md")
+Log-DebugLine "test 27A: resultFolder: $resultFolder"
+Log-DebugLine "test 27B: projectName:  $projectName"
+Log-DebugLine "test 27C: targetPath:   $targetPath"
 
             Copy-Item -Path $testResultPath -Destination $targetPath
 
