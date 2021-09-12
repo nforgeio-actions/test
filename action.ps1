@@ -232,9 +232,10 @@ Log-DebugLine "test 14: $targetFramework"
             $projectFolder = [System.IO.Path]::GetDirectoryName($projectPath)
             $resultsFolder = [System.IO.Path]::Combine($projectFolder, $targetFramework)
 
-Log-DebugLine "test 15: $resultsFolder"            
+Log-DebugLine "test 15: $resultsFolder"
             [System.IO.Directory]::CreateDirectory($resultsFolder)
 
+Log-DebugLine "test 15A: dotnet test $projectPath --logger "liquid.md" --no-restore --configuration $buildConfig $filterOption $testFilter --output $resultsFolder"
             dotnet test $projectPath --logger "liquid.md" --no-restore --configuration $buildConfig $filterOption $testFilter --output $resultsFolder | Out-Null
         
             $success = $? -and $success
@@ -274,7 +275,7 @@ Log-DebugLine "test 19: $projectPath"
         $projectName          = [System.IO.Path]::GetFileName($projectPath)
         $projectFolder        = [System.IO.Path]::GetDirectoryName($projectPath)
         $projectResultsFolder = [System.IO.Path]::Combine($projectFolder, "TestResults")
-Log-DebugLine "test 20 $projectResultsFolder"
+Log-DebugLine "test 20: $projectResultsFolder"
         
         if (![System.IO.Directory]::Exists($projectResultsFolder))
         {
