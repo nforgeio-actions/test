@@ -266,8 +266,6 @@ Log-DebugLine "test 18:"
     #       RenameAndCopy() will build a map with the projects that
     #       have actually has results for use further below.
 
-    $projectsWithResults = @{}
-
     function RenameAndCopy
     {
         [CmdletBinding()]
@@ -309,8 +307,6 @@ Log-DebugLine "test 23: $resultPath"
 Log-DebugLine "test 24: $resultPath --> $projectName.$targetFramework.md"            
             Copy-Item -Path $resultPath -Destination $([System.IO.Path]::Combine($resultsFolder, "$projectName.$targetFramework.md"))
         }
-
-        $projectsWithResults.Add($projectName, "true")
     }
 
 Log-DebugLine "test 25:"
