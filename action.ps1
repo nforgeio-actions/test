@@ -238,7 +238,12 @@ Log-DebugLine "test 14: $targetFramework"
             $resultsFolder = [System.IO.Path]::Combine($projectFolder, "TestResults", $targetFramework)
 
 Log-DebugLine "test 15: $resultsFolder"
+            # Create the test results folder and write the target framework to 
+            # the [.framework] file within.  We'll need this later when generating
+            # the result information to be used by the [notify-test] action.
+
             [System.IO.Directory]::CreateDirectory($resultsFolder)
+            [System.IO.File]::WriteAllText([System.IO.Path]::Combine($resultsFolder, ".framework"), $targetFramework)
 
 Log-DebugLine "test 15A: dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --results-directory $resultsFolder"
             # dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --results-directory $resultsFolder | Out-Null
@@ -256,7 +261,7 @@ Log-DebugLine "test 18:"
     #
     # We're expecting the project results folder to have subfolders 
     # named for the targetframework specified for the run.  There 
-    # should be only be one results file in each sibfolder and we're
+    # should be only be one results file in each subfolder and we're
     # going to rename each file to: PROJECT-NAME.FRAMEWORK.md.
     #
     # NOTE: It's possible that there will be no results file for a 
@@ -275,7 +280,6 @@ Log-DebugLine "test 18:"
         )
 
 Log-DebugLine "test 19: $projectPath"
-
         $projectName          = [System.IO.Path]::GetFileNameWithoutExtension($projectPath)
         $projectFolder        = [System.IO.Path]::GetDirectoryName($projectPath)
         $projectResultsFolder = [System.IO.Path]::Combine($projectFolder, "TestResults")
