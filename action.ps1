@@ -702,8 +702,9 @@ Log-DebugLine "test 29:"
 }
 catch
 {
-Log-DebugLine "test 30:"
-    Write-ActionException $_
+    $err = $_
+Log-DebugLine "test 30: $err"
+    Write-ActionException $err
     Set-ActionOutput "success" "false"
     exit 1
 }
