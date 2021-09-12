@@ -276,7 +276,7 @@ Log-DebugLine "test 18:"
 
 Log-DebugLine "test 19: $projectPath"
 
-        $projectName          = [System.IO.Path]::GetFileName($projectPath)
+        $projectName          = [System.IO.Path]::GetFileNameWithoutExtension($projectPath)
         $projectFolder        = [System.IO.Path]::GetDirectoryName($projectPath)
         $projectResultsFolder = [System.IO.Path]::Combine($projectFolder, "TestResults")
 Log-DebugLine "test 20: $projectResultsFolder"
