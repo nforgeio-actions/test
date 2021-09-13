@@ -421,7 +421,7 @@ Log-DebugLine "test 27A: testResultPath: $testResultPath"
             for ($i = 0; $i -lt $pathSegments.Length; $i++)
             {
 Log-DebugLine "index:   $i"                
-Log-DebugLine "segment: " + $pathSegments[$i]
+Log-DebugLine ("segment: " + $pathSegments[$i])
                 if ($pathSegments[$i] -eq "TestResults")
                 {
 Log-DebugLine "*** MATCH ***"
