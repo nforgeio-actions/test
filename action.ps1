@@ -524,7 +524,7 @@ Log-DebugLine "test 27D: targetPath:     $targetPath"
             # This script writes a [.framework] file specifying the target framework
             # to the test results folder.  We need to load that into $framework.
 
-            $resultFolder = [System.IO.File]::GetDirectoryName($testResultPath)
+            $resultFolder = [System.IO.Path]::GetDirectoryName($testResultPath)
             $framework    = [System.IO.File]::ReadAllText([System.IO.Path]::Combine($resultFolder, ".framework"))
 Log-DebugLine "test 27E: resultFolder:   $resultFolder"            
 Log-DebugLine "test 27F: framework:      $framework"            
