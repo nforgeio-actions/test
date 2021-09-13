@@ -392,8 +392,8 @@ Log-DebugLine "test 27:"
         # without being escaped and Windows doesn't allow them in file names.
         #
         # We're also going to create the semicolon separated list of markdown formatted
-        # test result URIs for the [result-uris] output along with the matching String
-        # with test result summaries for the [result-summaries] output.
+        # test result URIs for the [result-uris] output along with the matching test result 
+        # summaries for the [result-summaries] output.
 
         $utcNow             = [System.DateTime]::UtcNow
         $timestamp          = $utcNow.ToString("yyyy-MM-ddTHH_mm_ssZ")
@@ -403,6 +403,7 @@ Log-DebugLine "test 27:"
 
         ForEach ($testResultPath in $sortedResultPaths)
         {
+Log-DebugLine "=================================================================="            
 Log-DebugLine "test 27A: testResultPath: $testResultPath"
             # [$testResultPath] is going to look something like:
             #
@@ -443,7 +444,7 @@ Log-DebugLine "test 27A: testResultPath: $testResultPath"
             $framework   = $pathSegments[$testResultsIndex + 1]
             $targetPath  = [System.IO.path]::Combine($testResultsFolder, "$timestamp-$projectName-$framework.md")
 Log-DebugLine "test 27B: projectName:    $projectName"
-Log-DebugLine "test 27C: framework:      $targetPath"
+Log-DebugLine "test 27C: framework:      $framework"
 Log-DebugLine "test 27D: targetPath:     $targetPath"
 
             Copy-Item -Path $testResultPath -Destination $targetPath
