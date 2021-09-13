@@ -418,7 +418,7 @@ Log-DebugLine "test 27A: testResultPath: $testResultPath"
             $pathSegments     = $testResultPath.Split('\')
             $testResultsIndex = -1
 
-            for ($i = 0; $i -eq $pathSegments.Length; $i++)
+            for ($i = 0; $i -le $pathSegments.Length; $i++)
             {
                 if ($pathSegments[$i] -eq "TestResults")
                 {
