@@ -332,7 +332,7 @@ Log-DebugLine "test 24: $resultPath --> $outputPath"
                 [System.IO.File]::Delete($outputPath)
             }
 
-            [System.IO.File]::Copy($resultPath, $outputPath))
+            [System.IO.File]::Copy($resultPath, $outputPath)
         }
 Log-DebugLine "test 24A:"
     }
