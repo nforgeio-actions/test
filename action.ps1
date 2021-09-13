@@ -424,23 +424,20 @@ Log-DebugLine ("test 27B: net48 exists: " + [System.IO.File]::Exists("C:\actions
             # We need to extract the project name and target framework from
             # the path segments.  We'll use the parens to help identify the
             # framework and project name parts of the file name.
-            #
-            # We'll also rename the file to:
-            #
-            #    C:\actions-runner\_work\neonCLOUD\neonCLOUD\test-results\TIMESTAMP-PROJECT-NAME.FRAMEWWORK.md
-            #
-            # by stripping out the parens.
 
             $fileName    = [System.IO.Path]::GetFileNameWithoutExtension($testResultPath);
             $projectName = [regex]::Match($fileName, "(?<project>.+)\.\(").Groups["project"].Value
             $framework   = [regex]::Match($fileName, "\((?<framework>.+)\)").Groups["framework"].Value
-            $archivePath = [System.IO.path]::Combine($testArchiveFolder, "$timestamp-$projectName-$framework.md")
 Log-DebugLine "test 27C: fileName:       $fileName"
 Log-DebugLine "test 27D: projectName:    $projectName"
 Log-DebugLine "test 27E: framework:      $framework"
-Log-DebugLine "test 27F: archivePath:    $archivePath"
 
-            [System.IO.File]::Move($testResultPath, $archivePath)
+            # Copy the result to the archive folder, adding the timestamp prefix.
+
+            $archivePath = [System.IO.path]::Combine($testArchiveFolder, "$timestamp-$projectName-$framework.md")
+            
+Log-DebugLine "test 27F: archivePath:    $archivePath"
+            [System.IO.File]::Copy($testResultPath, $archivePath)
 Log-DebugLine "test 27G"
 
             # Append the next test result URI.
