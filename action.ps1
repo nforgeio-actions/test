@@ -70,13 +70,16 @@ try
     }
 
     # Delete any existing test result folder and then create a fresh folder.
-      
+
+Log-DebugLine "test 0A: resultsFolder: $resultsFolder"
     if ([System.IO.File]::Exists($resultsFolder))
     {
+Log-DebugLine "test 0B: deleting: $resultsFolder"
         [System.IO.File]::Delete($resultsFolder)
     }
 
     [System.IO.Directory]::CreateDirectory($resultsFolder) | Out-Null
+Log-DebugLine "test 0B: creating: $resultsFolder"
 
     # Fetch the workflow and run run URIs.
 
@@ -167,8 +170,6 @@ Log-DebugLine "test 2:"
     }
 
 Log-DebugLine "test 3:"
-Log-DebugLine "test 4:"
-
     $success = $true
 
     # Execute the test for each target framework.  Note that we're going to
@@ -180,7 +181,22 @@ Log-DebugLine "test 4:"
 
     ForEach ($projectPath in $testProjects)
     {
-Log-DebugLine "test 5: $projectPath"        
+Log-DebugLine "test 4: projectPath: $projectPath"
+        # Remove the project's local test results folder if it exists.
+
+        $projectFolder = [System.IO.Path]::GetDirectoryName($projectPath)
+        $localResults  = [System.IO.Path]::Combine($projectFolder, "TestResults")
+
+Log-DebugLine "test 5A: localResults: $localResults"
+        if ([System.IO.File]::Exists($localResults))
+        {
+Log-DebugLine "test 5B: deleting: $localResults"
+            [System.IO.File]::Delete($localResults)
+        }
+
+        [System.IO.Directory]::CreateDirectory($localResults) | Out-Null
+Log-DebugLine "test 5B: creating: $localResults"
+
         # Read the project file to retrieve the target frameworks.
 
         $projectFile      = [System.IO.File]::ReadAllText($projectPath)
@@ -508,11 +524,13 @@ Log-DebugLine "test 27D: targetPath:     $targetPath"
             # to the test results folder.  We need to load that into $framework.
 
             $framework = [System.IO.File]::ReadAllText([System.IO.Path]::Combine($testResultPath, "..", ".framework"))
+Log-DebugLine "test 27E: framework:      $targetPath"            
 
             # Build the result information string for this test result.  This will be passed
             # to the [notify-test] and used for generating a nice summary.
 
             $resultInfo += "$projectName,$totalTests,$errorTests,$skipTests,$elapsed,$framework"
+Log-DebugLine "test 27F: resultInfo:     $resultInfo"            
         }
 
         # Commit and push any [artifacts] repo changes.
