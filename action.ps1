@@ -324,7 +324,7 @@ Log-DebugLine "test 23: $resultPath"
             # Copy the project test result file to the output results folder.
 
 Log-DebugLine "test 24: $resultPath --> $projectName.$targetFramework.md"            
-            Copy-Item -Path $resultPath -Destination $([System.IO.Path]::Combine($resultsFolder, "$projectName.($targetFramework).md"))
+            Copy-Item -Path $resultPath -Destination $([System.IO.Path]::Combine($resultsFolder, "$projectName.`($targetFramework`).md"))
         }
     }
 
