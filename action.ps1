@@ -435,7 +435,7 @@ Log-DebugLine "test 27B: testResultsIndex:    $testResultsIndex"
 
             if ($i -eq 0)
             {
-Log-DebugLine "test 27C: projectName:    $projectName"                throw "ERROR: Invalid result path [testResultPath].  [TestResults] cannot be the first segment."
+                throw "ERROR: Invalid result path [testResultPath].  [TestResults] cannot be the first segment."
             }
 
             if ($i -eq $pathSegments.Length - 1)
@@ -446,12 +446,12 @@ Log-DebugLine "test 27C: projectName:    $projectName"                throw "ERR
             $projectName = $pathSegments[$testResultsIndex - 1]
             $framework   = $pathSegments[$testResultsIndex + 1]
             $targetPath  = [System.IO.path]::Combine($testResultsFolder, "$timestamp-$projectName-$framework.md")
-Log-DebugLine "test 27D: projectName:    $projectName"
-Log-DebugLine "test 27E: framework:      $framework"
-Log-DebugLine "test 27F: targetPath:     $targetPath"
+Log-DebugLine "test 27C: projectName:    $projectName"
+Log-DebugLine "test 27D: framework:      $framework"
+Log-DebugLine "test 27E: targetPath:     $targetPath"
 
             Copy-Item -Path $testResultPath -Destination $targetPath
-Log-DebugLine "test 27G"
+Log-DebugLine "test 27F"
 
             # Append the next test result URI.
 
