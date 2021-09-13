@@ -267,7 +267,7 @@ Log-DebugLine "test 16: $success"
         }
 Log-DebugLine "test 17:"        
     }
-Log-DebugLine "test 18:"    
+Log-DebugLine ("test 18: net48 exists" + [System.IO.File]::Exists("C:\actions-runner\_work\neonCLOUD\neonCLOUD\test-results\Test.Neon.Cryptography.(net48).md"))
 
     # Copy all of the test results from the folders where they were
     # generated to the results folder passed to the action.  
@@ -323,15 +323,16 @@ Log-DebugLine "test 23: $resultPath"
 
             # Copy the project test result file to the output results folder.
 
-Log-DebugLine "test 24: $resultPath --> $projectName.$targetFramework.md"            
-            Copy-Item -Path $resultPath -Destination $([System.IO.Path]::Combine($resultsFolder, "$projectName.`($targetFramework`).md"))
+Log-DebugLine "test 24: $resultPath --> $projectName.`($targetFramework`).md"            
+            [System.IO.File]::Copy($resultPath, $([System.IO.Path]::Combine($resultsFolder, "$projectName.`($targetFramework`).md")))
         }
     }
 
-Log-DebugLine "test 25:"
+Log-DebugLine ("test 15: net48 exists" + [System.IO.File]::Exists("C:\actions-runner\_work\neonCLOUD\neonCLOUD\test-results\Test.Neon.Cryptography.(net48).md"))
     ForEach ($projectPath in $testProjects)
     {
         RenameAndCopy $projectPath
+Log-DebugLine ("test 15A: net48 exists" + [System.IO.File]::Exists("C:\actions-runner\_work\neonCLOUD\neonCLOUD\test-results\Test.Neon.Cryptography.(net48).md"))
     }
 Log-DebugLine "test 26:"    
 
@@ -406,6 +407,7 @@ Log-DebugLine "test 27:"
         {
 Log-DebugLine "=================================================================="            
 Log-DebugLine "test 27A: testResultPath: $testResultPath"
+Log-DebugLine ("test 27B: net48 exists" + [System.IO.File]::Exists("C:\actions-runner\_work\neonCLOUD\neonCLOUD\test-results\Test.Neon.Cryptography.(net48).md"))
             # [$testResultPath] is going to look something like:
             #
             #    C:\actions-runner\_work\neonCLOUD\neonCLOUD\test-results\Test.Neon.Cryptography.(net48).md
@@ -424,13 +426,13 @@ Log-DebugLine "test 27A: testResultPath: $testResultPath"
             $projectName = [regex]::Match($fileName, "(?<project>.+)\.\(").Groups["project"].Value
             $framework   = [regex]::Match($fileName, "\((?<framework>.+)\)").Groups["framework"].Value
             $archivePath = [System.IO.path]::Combine($testArchiveFolder, "$timestamp-$projectName-$framework.md")
-Log-DebugLine "test 27B: fileName:       $fileName"
-Log-DebugLine "test 27C: projectName:    $projectName"
-Log-DebugLine "test 27D: framework:      $framework"
-Log-DebugLine "test 27E: archivePath:    $archivePath"
+Log-DebugLine "test 27C: fileName:       $fileName"
+Log-DebugLine "test 27D: projectName:    $projectName"
+Log-DebugLine "test 27E: framework:      $framework"
+Log-DebugLine "test 27F: archivePath:    $archivePath"
 
             [System.IO.File]::Move($testResultPath, $archivePath)
-Log-DebugLine "test 27F"
+Log-DebugLine "test 27G"
 
             # Append the next test result URI.
 
