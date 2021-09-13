@@ -418,27 +418,30 @@ Log-DebugLine "test 27A: testResultPath: $testResultPath"
             $pathSegments     = $testResultPath.Split('\')
             $testResultsIndex = -1
 
-            for ($i = 0; $i -le $pathSegments.Length; $i++)
+            for ($i = 0; $i -lt $pathSegments.Length; $i++)
             {
+Log-DebugLine "index:   $i"                
+Log-DebugLine "segment: " + $pathSegments[$i]
                 if ($pathSegments[$i] -eq "TestResults")
                 {
+Log-DebugLine "*** MATCH ***"
                     $testResultsIndex = $i;
                     break
                 }
             }
 
 Log-DebugLine "test 27B: testResultsIndex:    $testResultsIndex"
-            if ($i -eq -1)
+            if ($testResultsIndex -eq -1)
             {
                 throw "ERROR: Invalid result path [testResultPath].  [TestResults] segment not found."
             }
 
-            if ($i -eq 0)
+            if ($testResultsIndex -eq 0)
             {
                 throw "ERROR: Invalid result path [testResultPath].  [TestResults] cannot be the first segment."
             }
 
-            if ($i -eq $pathSegments.Length - 1)
+            if ($testResultsIndex -eq $pathSegments.Length - 1)
             {
                 throw "ERROR: Invalid result path [testResultPath].  [TestResults] cannot be the last segment."
             }
