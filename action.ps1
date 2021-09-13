@@ -250,20 +250,20 @@ Log-DebugLine "test 13:"
         foreach ($targetFramework in $targetFrameworks)
         {
 Log-DebugLine "test 14: $targetFramework"            
-            $projectFolder = [System.IO.Path]::GetDirectoryName($projectPath)
-            $resultsFolder = [System.IO.Path]::Combine($projectFolder, "TestResults", $targetFramework)
+            $projectFolder        = [System.IO.Path]::GetDirectoryName($projectPath)
+            $projectResultsFolder = [System.IO.Path]::Combine($projectFolder, "TestResults", $targetFramework)
 
 Log-DebugLine "test 15: $resultsFolder"
             # Create the test results folder and write the target framework to 
             # the [.framework] file within.  We'll need this later when generating
             # the result information to be used by the [notify-test] action.
 
-            [System.IO.Directory]::CreateDirectory($resultsFolder)
-            [System.IO.File]::WriteAllText([System.IO.Path]::Combine($resultsFolder, ".framework"), $targetFramework)
+            [System.IO.Directory]::CreateDirectory($projectResultsFolder)
+            [System.IO.File]::WriteAllText([System.IO.Path]::Combine($projectResultsFolder, ".framework"), $targetFramework)
 
-Log-DebugLine "test 15A: dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --results-directory $resultsFolder"
-            # dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --results-directory $resultsFolder | Out-Null
-dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --results-directory $resultsFolder *>> C:\Temp\log.txt 
+Log-DebugLine "test 15A: dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --results-directory $projectResultsFolder"
+            # dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --results-directory $projectResultsFolder | Out-Null
+dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --results-directory $projectResultsFolder *>> C:\Temp\log.txt 
         
             $success = $? -and $success
 Log-DebugLine "test 16: $success"            
@@ -323,6 +323,8 @@ Log-DebugLine "test 23: $resultPath"
 
             $targetFramework = [System.IO.Path]::GetDirectoryName($resultPath)
             $targetFramework = [System.IO.Path]::GetFileName($targetFramework)
+
+            # Copy the project test result file to the output results folder.
 
 Log-DebugLine "test 24: $resultPath --> $projectName.$targetFramework.md"            
             Copy-Item -Path $resultPath -Destination $([System.IO.Path]::Combine($resultsFolder, "$projectName.$targetFramework.md"))
@@ -524,16 +526,18 @@ Log-DebugLine "test 27D: targetPath:     $targetPath"
             # This script writes a [.framework] file specifying the target framework
             # to the test results folder.  We need to load that into $framework.
 
-            $resultFolder = [System.IO.Path]::GetDirectoryName($testResultPath)
-            $framework    = [System.IO.File]::ReadAllText([System.IO.Path]::Combine($resultFolder, ".framework"))
+            $resultFolder  = [System.IO.Path]::GetDirectoryName($testResultPath)
+            $frameworkPath = [System.IO.Path]::Combine($resultFolder, ".framework")
+            $framework     = [System.IO.File]::ReadAllText($frameworkPath)
 Log-DebugLine "test 27E: resultFolder:   $resultFolder"            
-Log-DebugLine "test 27F: framework:      $framework"            
+Log-DebugLine "test 27F: frameworkPath:  $frameworkPath"            
+Log-DebugLine "test 27G: framework:      $framework"            
 
             # Build the result information string for this test result.  This will be passed
             # to the [notify-test] and used for generating a nice summary.
 
             $resultInfo += "$projectName,$totalTests,$errorTests,$skipTests,$elapsed,$framework"
-Log-DebugLine "test 27GF: resultInfo:     $resultInfo"            
+Log-DebugLine "test 27H: resultInfo:     $resultInfo"            
         }
 
         # Commit and push any [artifacts] repo changes.
