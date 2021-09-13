@@ -418,7 +418,7 @@ Log-DebugLine "test 27A: testResultPath: $testResultPath"
             $pathSegments     = $testResultPath.Split('\')
             $testResultsIndex = -1
 
-            for ($i = 0; $i -le $pathSegments.Length; $i++)
+            for ($i = 0; $i -eq $pathSegments.Length; $i++)
             {
                 if ($pathSegments[$i] -eq "TestResults")
                 {
@@ -427,6 +427,7 @@ Log-DebugLine "test 27A: testResultPath: $testResultPath"
                 }
             }
 
+Log-DebugLine "test 27B: testResultsIndex:    $testResultsIndex"
             if ($i -eq -1)
             {
                 throw "ERROR: Invalid result path [testResultPath].  [TestResults] segment not found."
@@ -434,7 +435,7 @@ Log-DebugLine "test 27A: testResultPath: $testResultPath"
 
             if ($i -eq 0)
             {
-                throw "ERROR: Invalid result path [testResultPath].  [TestResults] cannot be the first segment."
+Log-DebugLine "test 27C: projectName:    $projectName"                throw "ERROR: Invalid result path [testResultPath].  [TestResults] cannot be the first segment."
             }
 
             if ($i -eq $pathSegments.Length - 1)
@@ -445,11 +446,12 @@ Log-DebugLine "test 27A: testResultPath: $testResultPath"
             $projectName = $pathSegments[$testResultsIndex - 1]
             $framework   = $pathSegments[$testResultsIndex + 1]
             $targetPath  = [System.IO.path]::Combine($testResultsFolder, "$timestamp-$projectName-$framework.md")
-Log-DebugLine "test 27B: projectName:    $projectName"
-Log-DebugLine "test 27C: framework:      $framework"
-Log-DebugLine "test 27D: targetPath:     $targetPath"
+Log-DebugLine "test 27D: projectName:    $projectName"
+Log-DebugLine "test 27E: framework:      $framework"
+Log-DebugLine "test 27F: targetPath:     $targetPath"
 
             Copy-Item -Path $testResultPath -Destination $targetPath
+Log-DebugLine "test 27G"
 
             # Append the next test result URI.
 
@@ -485,7 +487,7 @@ Log-DebugLine "test 27D: targetPath:     $targetPath"
             $elapsed    = "-na-"
             $framework  = "-na-"
 
-            ForEach ($line in [System.IO.File]::ReadAllLines($testResultPath))
+            foreach ($line in [System.IO.File]::ReadAllLines($testResultPath))
             {
                 if ([System.String]::IsNullOrEmpty($line))
                 {
