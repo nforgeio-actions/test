@@ -393,7 +393,7 @@ Log-DebugLine "test 27:"
         #
         # We're also going to create the semicolon separated list of markdown formatted
         # test result URIs for the [result-uris] output along with the matching test result 
-        # summaries for the [result-summaries] output.
+        # summaries for the [result-info] output.
 
         $utcNow             = [System.DateTime]::UtcNow
         $timestamp          = $utcNow.ToString("yyyy-MM-ddTHH_mm_ssZ")
@@ -456,7 +456,7 @@ Log-DebugLine "test 27D: targetPath:     $targetPath"
             # the semicolon list of markdown formatted URIs to the test results as the well appear
             # in the [nforgeio/artifacts] repo.
             #
-            # [result-summaries] will return as a semicolon separated list of summaries with the
+            # [result-info] will return as a semicolon separated list of summaries with the
             # same order as [result-uris].  Each summary holds the total number of tests, failures, 
             # skips and the target framework, formatted like:
             #
@@ -524,14 +524,16 @@ Log-DebugLine "test 27D: targetPath:     $targetPath"
             # This script writes a [.framework] file specifying the target framework
             # to the test results folder.  We need to load that into $framework.
 
-            $framework = [System.IO.File]::ReadAllText([System.IO.Path]::Combine($testResultPath, "..", ".framework"))
-Log-DebugLine "test 27E: framework:      $targetPath"            
+            $resultFolder = [System.IO.File]::GetDirectoryName($testResultPath)
+            $framework    = [System.IO.File]::ReadAllText([System.IO.Path]::Combine($resultFolder, ".framework"))
+Log-DebugLine "test 27E: resultFolder:   $resultFolder"            
+Log-DebugLine "test 27F: framework:      $framework"            
 
             # Build the result information string for this test result.  This will be passed
             # to the [notify-test] and used for generating a nice summary.
 
             $resultInfo += "$projectName,$totalTests,$errorTests,$skipTests,$elapsed,$framework"
-Log-DebugLine "test 27F: resultInfo:     $resultInfo"            
+Log-DebugLine "test 27GF: resultInfo:     $resultInfo"            
         }
 
         # Commit and push any [artifacts] repo changes.
