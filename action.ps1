@@ -435,7 +435,7 @@ Log-DebugLine "test 27E: framework:      $framework"
             # Copy the result to the archive folder, adding the timestamp prefix.
 
             $archivePath = [System.IO.path]::Combine($testArchiveFolder, "$timestamp-$projectName-$framework.md")
-            
+
 Log-DebugLine "test 27F: archivePath:    $archivePath"
             [System.IO.File]::Copy($testResultPath, $archivePath)
 Log-DebugLine "test 27G"
@@ -472,7 +472,6 @@ Log-DebugLine "test 27G"
             $errorTests = 0
             $skipTests  = 0
             $elapsed    = "-na-"
-            $framework  = "-na-"
 
             foreach ($line in [System.IO.File]::ReadAllLines($testResultPath))
             {
