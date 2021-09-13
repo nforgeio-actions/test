@@ -254,12 +254,9 @@ Log-DebugLine "test 14: $targetFramework"
             $projectResultsFolder = [System.IO.Path]::Combine($projectFolder, "TestResults", $targetFramework)
 
 Log-DebugLine "test 15: $resultsFolder"
-            # Create the test results folder and write the target framework to 
-            # the [.framework] file within.  We'll need this later when generating
-            # the result information to be used by the [notify-test] action.
+            # Create the test results folder.
 
             [System.IO.Directory]::CreateDirectory($projectResultsFolder)
-            [System.IO.File]::WriteAllText([System.IO.Path]::Combine($projectResultsFolder, ".framework"), $targetFramework)
 
 Log-DebugLine "test 15A: dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --results-directory $projectResultsFolder"
             # dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --results-directory $projectResultsFolder | Out-Null
@@ -278,14 +275,14 @@ Log-DebugLine "test 18:"
     # We're expecting the project results folder to have subfolders 
     # named for the targetframework specified for the run.  There 
     # should be only be one results file in each subfolder and we're
-    # going to rename each file to: PROJECT-NAME.FRAMEWORK.md.
+    # going to rename each file to: PROJECT-NAME.(FRAMEWORK).md.
     #
     # NOTE: It's possible that there will be no results file for a 
     #       project when the specified filter filters-out all tests
     #       from the project.
     #
-    #       RenameAndCopy() will build a map with the projects that
-    #       have actually has results for use further below.
+    # RenameAndCopy() will build a map with the projects that actually
+    # have results for use further below.
 
     function RenameAndCopy
     {
@@ -327,7 +324,7 @@ Log-DebugLine "test 23: $resultPath"
             # Copy the project test result file to the output results folder.
 
 Log-DebugLine "test 24: $resultPath --> $projectName.$targetFramework.md"            
-            Copy-Item -Path $resultPath -Destination $([System.IO.Path]::Combine($resultsFolder, "$projectName.$targetFramework.md"))
+            Copy-Item -Path $resultPath -Destination $([System.IO.Path]::Combine($resultsFolder, "$projectName.($targetFramework).md"))
         }
     }
 
@@ -344,15 +341,16 @@ Log-DebugLine "test 26:"
     # automatically and GitHub also handles security.  Test results are persisted
     # to the [$/test] folder and will be named like:
     # 
-    #       yyyy-MM-ddTHH_mm_ssZ-NAME.md
+    #       yyyy-MM-ddTHH_mm_ssZ-PROJECTNAME-FRAMEWORK.md
     #
-    # where NAME identifies the test project that generated the result file.
+    # where PROJECTNAME identifies the test project that generated the result file
+    # and FRAMEWORK is the target framework used for the test run.
     #
     # We're also going to remove files with timestamps older than the integer
     # value from [$/setting-retention-days] to keep a lid on the number of 
     # files that need to be pulled (although the repo history will always grow).
 
-    $testResultsFolder = [System.IO.Path]::Combine($naRoot, "test")
+    $testArchiveFolder = [System.IO.Path]::Combine($naRoot, "test")
 
     if ([System.String]::IsNullOrEmpty($naRoot) -or ![System.IO.Directory]::Exists($naRoot))
     {
@@ -362,7 +360,7 @@ Log-DebugLine "test 26:"
 Log-DebugLine "test 27:"
     # Ensure that the [test] folder exists in the [artifacts] repo.
 
-    [System.IO.Directory]::CreateDirectory($testResultsFolder) | Out-Null
+    [System.IO.Directory]::CreateDirectory($testArchiveFolder) | Out-Null
 
     Push-Cwd $naRoot | Out-Null
 
@@ -373,7 +371,7 @@ Log-DebugLine "test 27:"
         Invoke-CaptureStreams "git checkout --quiet master" | Out-Null    
         Invoke-CaptureStreams "git pull --quiet" | Out-Null
 
-        # List the files in the results folder and created an array with the sorted file paths.
+        # List the files in the results folder to create an array with the sorted file paths.
         # We're sorting here so the [nforgeio-actions/teams-notify-test] action won't have to.
 
         $sortedResultPaths = @()
@@ -388,10 +386,11 @@ Log-DebugLine "test 27:"
         # Copy the project test results into the [test] folder in the [artifacts] repo,
         # renaming the files to be like: 
         #
-        #       yyyy-MM-ddTHH_mm_ssZ-NAME.md
+        #       yyyy-MM-ddTHH_mm_ssZ-PROJECTNAME.FRAMEWORK.md
         #
-        # Note that we're using underscores here because colons aren't allowed in URLs
-        # without being escaped and Windows doesn't allow them in file names.
+        # Note that we're using underscores here as the time separator because
+        # colons aren't allowed in URLs without being escaped and Windows doesn't 
+        # allow them in file names.
         #
         # We're also going to create the semicolon separated list of markdown formatted
         # test result URIs for the [result-uris] output along with the matching test result 
@@ -409,51 +408,28 @@ Log-DebugLine "=================================================================
 Log-DebugLine "test 27A: testResultPath: $testResultPath"
             # [$testResultPath] is going to look something like:
             #
-            #   C:\src\neonKUBE\Test\Test.Neon.Cryptography\TestResults\net48\Test.Neon.Cryptography.net48.md
+            #    C:\actions-runner\_work\neonCLOUD\neonCLOUD\test-results\Test.Neon.Cryptography.(net48).md
             #
             # We need to extract the project name and target framework from
-            # the path segments.  The project name is the segment before
-            # "TestResults" and the framework is the segment afterwards.
+            # the path segments.  We'll use the parens to help identify the
+            # framework and project name parts of the file name.
+            #
+            # We'll also rename the file to:
+            #
+            #    C:\actions-runner\_work\neonCLOUD\neonCLOUD\test-results\TIMESTAMP-PROJECT-NAME.FRAMEWWORK.md
+            #
+            # by stripping out the parens.
 
-            $pathSegments     = $testResultPath.Split('\')
-            $testResultsIndex = -1
-
-            for ($i = 0; $i -lt $pathSegments.Length; $i++)
-            {
-Log-DebugLine "index:   $i"                
-Log-DebugLine ("segment: " + $pathSegments[$i])
-                if ($pathSegments[$i] -eq "TestResults")
-                {
-Log-DebugLine "*** MATCH ***"
-                    $testResultsIndex = $i;
-                    break
-                }
-            }
-
-Log-DebugLine "test 27B: testResultsIndex:    $testResultsIndex"
-            if ($testResultsIndex -eq -1)
-            {
-                throw "ERROR: Invalid result path [testResultPath].  [TestResults] segment not found."
-            }
-
-            if ($testResultsIndex -eq 0)
-            {
-                throw "ERROR: Invalid result path [testResultPath].  [TestResults] cannot be the first segment."
-            }
-
-            if ($testResultsIndex -eq $pathSegments.Length - 1)
-            {
-                throw "ERROR: Invalid result path [testResultPath].  [TestResults] cannot be the last segment."
-            }
-
-            $projectName = $pathSegments[$testResultsIndex - 1]
-            $framework   = $pathSegments[$testResultsIndex + 1]
-            $targetPath  = [System.IO.path]::Combine($testResultsFolder, "$timestamp-$projectName-$framework.md")
+            $fileName    = [System.IO.Path]::GetFileNameWithoutExtension($testResultPath);
+            $projectName = [regex]::Match($fileName, "(?<project>.+)\.\(").Groups["project"].Value
+            $framework   = [regex]::Match($fileName, "\((?<framework>.+)\)").Groups["framework"].Value
+            $archivePath = [System.IO.path]::Combine($testArchiveFolder, "$timestamp-$projectName-$framework.md")
+Log-DebugLine "test 27B: fileName:       $fileName"
 Log-DebugLine "test 27C: projectName:    $projectName"
 Log-DebugLine "test 27D: framework:      $framework"
-Log-DebugLine "test 27E: targetPath:     $targetPath"
+Log-DebugLine "test 27E: archivePath:    $archivePath"
 
-            Copy-Item -Path $testResultPath -Destination $targetPath
+            [System.IO.File]::Move($testResultPath, $archivePath)
 Log-DebugLine "test 27F"
 
             # Append the next test result URI.
@@ -475,8 +451,8 @@ Log-DebugLine "test 27F"
                 $resultInfo         += ";"
             }
 
-            $resultMarkdownUris += "[details](https://github.com/nforgeio/artifacts/blob/master/test/$timestamp-$projectName.md)"
-            $resultHtmlUris     += "<a href=`"https://github.com/nforgeio/artifacts/blob/master/test/$timestamp-$projectName.md`">details</a>"
+            $resultMarkdownUris += "[details](https://github.com/nforgeio/artifacts/blob/master/test/$timestamp-$projectName-$framework.md)"
+            $resultHtmlUris     += "<a href=`"https://github.com/nforgeio/artifacts/blob/master/test/$timestamp-$projectName-$framework.md`">details</a>"
 
             # $hack(jefflill):
             #
@@ -527,16 +503,6 @@ Log-DebugLine "test 27F"
                     }
                 }
             }
-
-            # This script writes a [.framework] file specifying the target framework
-            # to the test results folder.  We need to load that into $framework.
-
-            $resultFolder  = [System.IO.Path]::GetDirectoryName($testResultPath)
-            $frameworkPath = [System.IO.Path]::Combine($resultFolder, ".framework")
-            $framework     = [System.IO.File]::ReadAllText($frameworkPath)
-Log-DebugLine "test 27E: resultFolder:   $resultFolder"            
-Log-DebugLine "test 27F: frameworkPath:  $frameworkPath"            
-Log-DebugLine "test 27G: framework:      $framework"            
 
             # Build the result information string for this test result.  This will be passed
             # to the [notify-test] and used for generating a nice summary.
