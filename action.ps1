@@ -324,7 +324,7 @@ Log-DebugLine "test 23: $resultPath"
             # Copy the project test result file to the output results folder,
             # replacing any existing file.
 
-            $outputPath = $([System.IO.Path]::Combine($resultsFolder, "$projectName.`($targetFramework`).md")
+            $outputPath = [System.IO.Path]::Combine($resultsFolder, "$projectName.`($targetFramework`).md")
 Log-DebugLine "test 24: $resultPath --> $outputPath"            
 
             if ([System.IO.File]::Exists($outputPath))
