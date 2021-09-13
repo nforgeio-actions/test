@@ -259,8 +259,7 @@ Log-DebugLine "test 15: $resultsFolder"
             [System.IO.Directory]::CreateDirectory($projectResultsFolder)
 
 Log-DebugLine "test 15A: dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --results-directory $projectResultsFolder"
-            # dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --results-directory $projectResultsFolder | Out-Null
-dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --results-directory $projectResultsFolder *>> C:\Temp\log.txt 
+            dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --results-directory $projectResultsFolder | Out-Null
         
             $success = $? -and $success
 Log-DebugLine "test 16: $success"            
