@@ -56,7 +56,6 @@ $issueAssignees   = Get-ActionInput "issue-assignees"    $false
 $issueLabels      = Get-ActionInput "issue-labels"       $false
 $issueAppendLabel = Get-ActionInput "issue-append-label" $false
 
-Log-DebugLine "test 0:"
 if ($buildConfig -ne "release")
 {
     $buildConfig = "debug"
@@ -71,15 +70,12 @@ try
 
     # Delete any existing test result folder and then create a fresh folder.
 
-Log-DebugLine "test 0A: resultsFolder: $resultsFolder"
     if ([System.IO.File]::Exists($resultsFolder))
     {
-Log-DebugLine "test 0B: deleting: $resultsFolder"
         [System.IO.File]::Delete($resultsFolder)
     }
 
     [System.IO.Directory]::CreateDirectory($resultsFolder) | Out-Null
-Log-DebugLine "test 0B: creating: $resultsFolder"
 
     # Fetch the workflow and run run URIs.
 
@@ -127,7 +123,6 @@ Log-DebugLine "test 0B: creating: $resultsFolder"
             throw "[$repo] is not a supported repo."
         }
     }
-Log-DebugLine "test 1:"
 
     # Determine the solution path for the repo as well as the paths to
     # test project files.  This assumes that all tests are located at:
@@ -146,17 +141,10 @@ Log-DebugLine "test 1:"
             Continue
         }
 
-# $debug(jefflill): DELETE THIS!
-if ($projectPath.Contains("Test.Neon.Cadence"))
-{
-    Continue
-}
-
         $testProjects       += $projectPath
         $testProjectFolders += [System.IO.Path]::GetDirectoryName($projectPath)
     }
 
-Log-DebugLine "test 2:"
     # Delete all of the project test result folders.
 
     ForEach ($projectFolder in $testProjectFolders)
@@ -169,7 +157,6 @@ Log-DebugLine "test 2:"
         }
     }
 
-Log-DebugLine "test 3:"
     $success = $true
 
     # Execute the test for each target framework.  Note that we're going to
@@ -181,21 +168,17 @@ Log-DebugLine "test 3:"
 
     ForEach ($projectPath in $testProjects)
     {
-Log-DebugLine "test 4: projectPath: $projectPath"
         # Remove the project's local test results folder if it exists.
 
         $projectFolder = [System.IO.Path]::GetDirectoryName($projectPath)
         $localResults  = [System.IO.Path]::Combine($projectFolder, "TestResults")
 
-Log-DebugLine "test 5A: localResults: $localResults"
         if ([System.IO.File]::Exists($localResults))
         {
-Log-DebugLine "test 5B: deleting: $localResults"
             [System.IO.File]::Delete($localResults)
         }
 
         [System.IO.Directory]::CreateDirectory($localResults) | Out-Null
-Log-DebugLine "test 5B: creating: $localResults"
 
         # Read the project file to retrieve the target frameworks.
 
@@ -204,26 +187,21 @@ Log-DebugLine "test 5B: creating: $localResults"
 
         $results = [regex]::Matches($projectFile, "<TargetFramework>(?<framework>.+)</TargetFramework>")
 
-Log-DebugLine "test 6: ${results.Count}"
         if ($results.Count -ne 0)
         {
-Log-DebugLine "test 7:"
             # The CSPROJ specifies: <TargetFramework>...</TargetFramework>
 
             $targetFramework = $results[0].Groups["framework"].Value
 
             if (![string]::IsNullOrWhitespace($targetFramework))
-            {
-Log-DebugLine "test 8:"                
+            {            
                 $targetFrameworks += $targetFramework
             }
         }
         else
         {
-Log-DebugLine "test 9:"
             $results = [regex]::Matches($projectFile, "<TargetFrameworks>(?<frameworks>.+)</TargetFrameworks>")
 
-Log-DebugLine "test 10: ${results.Count}"
             if ($results.Count -ne 0)
             {
                 # The CSPROJ specifies: <TargetFrameworks>...</TargetFrameworks>
@@ -232,41 +210,32 @@ Log-DebugLine "test 10: ${results.Count}"
 
                 if (![string]::IsNullOrWhitespace($targetFrameworks))
                 {
-Log-DebugLine "test 11:"                    
                     # Target frameworks are separated by semicolons.
 
                     $targetFrameworks = $targetFrameworks.Split(';', [System.StringSplitOptions]::TrimEntries -bor [System.StringSplitOptions]::RemoveEmptyEntries)
 
                     foreach ($item in $targetFrameworks)
                     {
-Log-DebugLine "test 12: $item"
                         $targetFrameworks += $item
                     }
                 }
             }
         }
-Log-DebugLine "test 13:"        
 
         foreach ($targetFramework in $targetFrameworks)
         {
-Log-DebugLine "test 14: $targetFramework"            
             $projectFolder        = [System.IO.Path]::GetDirectoryName($projectPath)
             $projectResultsFolder = [System.IO.Path]::Combine($projectFolder, "TestResults", $targetFramework)
 
-Log-DebugLine "test 15: $resultsFolder"
             # Create the test results folder.
 
             [System.IO.Directory]::CreateDirectory($projectResultsFolder)
 
-Log-DebugLine "test 15A: dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --results-directory $projectResultsFolder"
             dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --results-directory $projectResultsFolder | Out-Null
         
             $success = $? -and $success
-Log-DebugLine "test 16: $success"            
         }
-Log-DebugLine "test 17:"        
     }
-Log-DebugLine ("test 18: net48 exists: " + [System.IO.File]::Exists("C:\actions-runner\_work\neonCLOUD\neonCLOUD\test-results\Test.Neon.Cryptography.(net48).md"))
 
     # Copy all of the test results from the folders where they were
     # generated to the results folder passed to the action.  
@@ -291,11 +260,9 @@ Log-DebugLine ("test 18: net48 exists: " + [System.IO.File]::Exists("C:\actions-
             [string]$projectPath
         )
 
-Log-DebugLine "test 19: $projectPath"
         $projectName          = [System.IO.Path]::GetFileNameWithoutExtension($projectPath)
         $projectFolder        = [System.IO.Path]::GetDirectoryName($projectPath)
         $projectResultsFolder = [System.IO.Path]::Combine($projectFolder, "TestResults")
-Log-DebugLine "test 20: $projectResultsFolder"
         
         if (![System.IO.Directory]::Exists($projectResultsFolder))
         {
@@ -306,14 +273,11 @@ Log-DebugLine "test 20: $projectResultsFolder"
 
         if ($projectResultFiles.Length -eq 0)
         {
-Log-DebugLine "test 21:"
             return  # No results for this test project
         }
-Log-DebugLine "test 22:"
 
         foreach ($resultPath in $projectResultFiles)
         {
-Log-DebugLine "test 23: $resultPath"
             # Extract the targetframework from the result path.  This is name of
             # the directory holding the result file.
 
@@ -324,7 +288,6 @@ Log-DebugLine "test 23: $resultPath"
             # replacing any existing file.
 
             $outputPath = [System.IO.Path]::Combine($resultsFolder, "$projectName.`($targetFramework`).md")
-Log-DebugLine "test 24: $resultPath --> $outputPath"            
 
             if ([System.IO.File]::Exists($outputPath))
             {
@@ -333,16 +296,12 @@ Log-DebugLine "test 24: $resultPath --> $outputPath"
 
             [System.IO.File]::Copy($resultPath, $outputPath)
         }
-Log-DebugLine "test 24A:"
     }
 
-Log-DebugLine ("test 15: net48 exists: " + [System.IO.File]::Exists("C:\actions-runner\_work\neonCLOUD\neonCLOUD\test-results\Test.Neon.Cryptography.(net48).md"))
     ForEach ($projectPath in $testProjects)
     {
         RenameAndCopy $projectPath
-Log-DebugLine ("test 15A: net48 exists: " + [System.IO.File]::Exists("C:\actions-runner\_work\neonCLOUD\neonCLOUD\test-results\Test.Neon.Cryptography.(net48).md"))
     }
-Log-DebugLine "test 26:"    
 
     # We're using the [nforgeio/artifacts] repo to hold the test results so
     # we can include result links in notifications.  The nice thing about using
@@ -366,7 +325,6 @@ Log-DebugLine "test 26:"
         throw "[artifacts] repo is not configured locally."
     }
 
-Log-DebugLine "test 27:"
     # Ensure that the [test] folder exists in the [artifacts] repo.
 
     [System.IO.Directory]::CreateDirectory($testArchiveFolder) | Out-Null
@@ -413,9 +371,6 @@ Log-DebugLine "test 27:"
 
         ForEach ($testResultPath in $sortedResultPaths)
         {
-Log-DebugLine "=================================================================="            
-Log-DebugLine "test 27A: testResultPath: $testResultPath"
-Log-DebugLine ("test 27B: net48 exists: " + [System.IO.File]::Exists("C:\actions-runner\_work\neonCLOUD\neonCLOUD\test-results\Test.Neon.Cryptography.(net48).md"))
             # [$testResultPath] is going to look something like:
             #
             #    C:\actions-runner\_work\neonCLOUD\neonCLOUD\test-results\Test.Neon.Cryptography.(net48).md
@@ -427,17 +382,12 @@ Log-DebugLine ("test 27B: net48 exists: " + [System.IO.File]::Exists("C:\actions
             $fileName    = [System.IO.Path]::GetFileNameWithoutExtension($testResultPath);
             $projectName = [regex]::Match($fileName, "(?<project>.+)\.\(").Groups["project"].Value
             $framework   = [regex]::Match($fileName, "\((?<framework>.+)\)").Groups["framework"].Value
-Log-DebugLine "test 27C: fileName:       $fileName"
-Log-DebugLine "test 27D: projectName:    $projectName"
-Log-DebugLine "test 27E: framework:      $framework"
 
             # Copy the result to the archive folder, adding the timestamp prefix.
 
             $archivePath = [System.IO.path]::Combine($testArchiveFolder, "$timestamp-$projectName-$framework.md")
 
-Log-DebugLine "test 27F: archivePath:    $archivePath"
             [System.IO.File]::Copy($testResultPath, $archivePath)
-Log-DebugLine "test 27G"
 
             # Append the next test result URI.
 
@@ -514,7 +464,6 @@ Log-DebugLine "test 27G"
             # to the [notify-test] and used for generating a nice summary.
 
             $resultInfo += "$projectName,$totalTests,$errorTests,$skipTests,$elapsed,$framework"
-Log-DebugLine "test 27H: resultInfo:     $resultInfo"            
         }
 
         # Commit and push any [artifacts] repo changes.
@@ -544,7 +493,6 @@ Log-DebugLine "test 27H: resultInfo:     $resultInfo"
 
     Pop-Cwd | Out-Null
 
-Log-DebugLine "test 28:"    
     #--------------------------------------------------------------------------
     # Create a new issue or append a comment to an existing one when there
     # are test failures and when the issue repo is passed.
@@ -755,12 +703,10 @@ Log-DebugLine "test 28:"
     {
         Set-ActionOutput "success" "false"
     }
-Log-DebugLine "test 29:"
 }
 catch
 {
     $err = $_
-Log-DebugLine "test 30: $err"
     Write-ActionException $err
     Set-ActionOutput "success" "false"
     exit 1
