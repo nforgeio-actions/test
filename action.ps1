@@ -225,13 +225,14 @@ try
         foreach ($targetFramework in $targetFrameworks)
         {
             $projectFolder        = [System.IO.Path]::GetDirectoryName($projectPath)
+            $projectOutputFolder  = [System.IO.Path]::Combine($projectFolder, "bin", $buildConfig, $targetFramework)
             $projectResultsFolder = [System.IO.Path]::Combine($projectFolder, "TestResults", $targetFramework)
 
             # Create the test results folder.
 
             [System.IO.Directory]::CreateDirectory($projectResultsFolder)
 
-            dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --results-directory $projectResultsFolder | Out-Null
+            dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --output $projectOutputFolder --results-directory $projectResultsFolder | Out-Null
         
             $success = $? -and $success
         }
