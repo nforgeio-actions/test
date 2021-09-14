@@ -82,7 +82,7 @@ try
     $workflowUri    = Get-ActionWorkflowUri
     $workflowRunUri = Get-ActionWorkflowRunUri
 
-    Switch ($repo)
+    switch ($repo)
     {
         ""
         {
@@ -134,11 +134,11 @@ try
     $testProjects       = @()
     $testProjectFolders = @()
 
-    ForEach ($projectPath in $([System.IO.Directory]::GetFiles($testRoot, "*.csproj", [System.IO.SearchOption]::AllDirectories)))
+    foreach ($projectPath in $([System.IO.Directory]::GetFiles($testRoot, "*.csproj", [System.IO.SearchOption]::AllDirectories)))
     {
         if ([System.IO.File]::Exists([System.IO.Path]::Combine($projectPath, ".no-tests")))
         {
-            Continue
+            continue
         }
 
         $testProjects       += $projectPath
@@ -147,7 +147,7 @@ try
 
     # Delete all of the project test result folders.
 
-    ForEach ($projectFolder in $testProjectFolders)
+    foreach ($projectFolder in $testProjectFolders)
     {
         $projectResultFolder = [System.IO.Path]::Combine($projectFolder, "TestResults")
 
@@ -166,7 +166,7 @@ try
     #
     # so that test runs won't overwrite results for a previous target framework.
 
-    ForEach ($projectPath in $testProjects)
+    foreach ($projectPath in $testProjects)
     {
         # Remove the project's local test results folder if it exists.
 
@@ -298,7 +298,7 @@ try
         }
     }
 
-    ForEach ($projectPath in $testProjects)
+    foreach ($projectPath in $testProjects)
     {
         RenameAndCopy $projectPath
     }
@@ -343,7 +343,7 @@ try
 
         $sortedResultPaths = @()
 
-        ForEach ($testResultPath in [System.IO.Directory]::GetFiles($resultsFolder, "*.md"))
+        foreach ($testResultPath in [System.IO.Directory]::GetFiles($resultsFolder, "*.md"))
         {
             $sortedResultPaths += $testResultPath
         }
@@ -369,7 +369,7 @@ try
         $resultHtmlUris     = @()
         $resultInfo         = ""
 
-        ForEach ($testResultPath in $sortedResultPaths)
+        foreach ($testResultPath in $sortedResultPaths)
         {
             # [$testResultPath] is going to look something like:
             #
@@ -426,7 +426,7 @@ try
             {
                 if ([System.String]::IsNullOrEmpty($line))
                 {
-                    Continue
+                    continue
                 }
 
                 if ($line.Contains("Passed </td>"))
@@ -512,13 +512,13 @@ try
 
         if (![System.String]::IsNullOrEmpty($issueAssignees))
         {
-            ForEach ($assignee in $issueAssignees.Split(" "))
+            foreach ($assignee in $issueAssignees.Split(" "))
             {
                 $assignee = $assignee.Trim();
                 
                 if ([System.String]::IsNullOrEmpty($asignee))
                 {
-                    Continue;
+                    continue;
                 }
 
                 $assignees += $assignee
@@ -529,13 +529,13 @@ try
 
         if (![System.String]::IsNullOrEmpty($issueLabels))
         {
-            ForEach ($label in $issueLabels.Split(" "))
+            foreach ($label in $issueLabels.Split(" "))
             {
                 $label = $label.Trim();
                 
                 if ([System.String]::IsNullOrEmpty($label))
                 {
-                    Continue;
+                    continue;
                 }
 
                 $labels += $label
@@ -625,7 +625,7 @@ try
         $resultFacts     = ""
         $resultInfoArray = $resultInfo.Split(";")
         
-        For ($i = 0; $i -lt $resultHtmlUris.Length; $i++)
+        for ($i = 0; $i -lt $resultHtmlUris.Length; $i++)
         {
             $resultUri = $resultHtmlUris[$i]
 
