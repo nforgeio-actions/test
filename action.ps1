@@ -196,11 +196,11 @@ try
         {
             # The CSPROJ specifies: <TargetFramework>...</TargetFramework>
 
-            $targetFramework = $results[0].Groups["framework"].Value
+            $framework = $results[0].Groups["framework"].Value
 
-            if (![string]::IsNullOrWhitespace($targetFramework))
+            if (![string]::IsNullOrWhitespace($framework))
             {            
-                $targetFrameworks += $targetFramework
+                $targetFrameworks += $framework
             }
         }
         else
@@ -211,15 +211,15 @@ try
             {
                 # The CSPROJ specifies: <TargetFrameworks>...</TargetFrameworks>
 
-                $targetFrameworks = $results[0].Groups["frameworks"].Value
+                $frameworks = $results[0].Groups["frameworks"].Value
 
-                if (![string]::IsNullOrWhitespace($targetFrameworks))
+                if (![string]::IsNullOrWhitespace($frameworks))
                 {
                     # Target frameworks are separated by semicolons.
 
-                    $targetFrameworks = $targetFrameworks.Split(';', [System.StringSplitOptions]::TrimEntries -bor [System.StringSplitOptions]::RemoveEmptyEntries)
+                    $frameworks = $frameworks.Split(';', [System.StringSplitOptions]::TrimEntries -bor [System.StringSplitOptions]::RemoveEmptyEntries)
 
-                    foreach ($item in $targetFrameworks)
+                    foreach ($item in $frameworks)
                     {
                         $targetFrameworks += $item
                     }
@@ -230,7 +230,6 @@ try
         foreach ($targetFramework in $targetFrameworks)
         {
 Log-DebugLine "-------------------------------------------------------------------------------"
-Log-DebugLine "START TEST: $projectPath/$targetFramework"
             $projectFolder        = [System.IO.Path]::GetDirectoryName($projectPath)
             $projectOutputFolder  = [System.IO.Path]::Combine($projectFolder, "bin", $buildConfig, $targetFramework)
             $projectResultsFolder = [System.IO.Path]::Combine($projectFolder, "TestResults", $targetFramework)
@@ -245,6 +244,7 @@ Log-DebugLine "START TEST: $projectPath/$targetFramework"
             $success = $? -and $success
 Log-DebugLine "END TEST:   success: $success"
 Log-DebugLine "-------------------------------------------------------------------------------"
+Log-DebugLine "TEST LOG:"
 Log-DebugLine $testLog
 Log-DebugLine "-------------------------------------------------------------------------------"
         }
