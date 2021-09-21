@@ -64,7 +64,7 @@ if ($buildConfig -ne "release")
 Log-DebugLine "==============================================================================="
 Log-DebugLine "REPO: $repo"
 Log-DebugLine "==============================================================================="
-Log-DebugLine
+Log-DebugLine ""
 
 try
 {
