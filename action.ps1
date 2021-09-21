@@ -240,13 +240,12 @@ Log-DebugLine "-----------------------------------------------------------------
 
 Log-DebugLine "START TEST: $projectPath/$targetFramework"
             # dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --output $projectOutputFolder --results-directory $projectResultsFolder | Out-Null
-            $testLog = $(dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --output $projectOutputFolder --results-directory $projectResultsFolder)
+            $testLog = dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --output $projectOutputFolder --results-directory $projectResultsFolder | Out-String
             $success = $? -and $success
 Log-DebugLine "END TEST:   success: $success"
 Log-DebugLine "-------------------------------------------------------------------------------"
 Log-DebugLine "TEST LOG:"
-Log-DebugLine $testLog
-Log-DebugLine "-------------------------------------------------------------------------------"
+Log-DebugLine $testLog.ToString()
         }
     }
 
