@@ -244,7 +244,7 @@ Log-DebugLine "-----------------------------------------------------------------
 
 Log-DebugLine "START TEST: $projectPath/$targetFramework"
             # dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --output $projectOutputFolder --results-directory $projectResultsFolder | Out-Null
-dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --output $projectOutputFolder --results-directory $projectResultsFolder --verbosity detailed >> C:\Temp\log.txt 2>&1
+dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --output $projectOutputFolder --results-directory $projectResultsFolder --verbosity detailed *>> C:\Temp\log.txt
             $success = $? -and $success
 Log-DebugLine "END TEST:   success: $success"
         }
