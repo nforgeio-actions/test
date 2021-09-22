@@ -229,6 +229,10 @@ try
 
         foreach ($targetFramework in $targetFrameworks)
         {
+if ($targetFramework -ne "net48")
+{
+    continue
+}
 Log-DebugLine "-------------------------------------------------------------------------------"
             $projectFolder        = [System.IO.Path]::GetDirectoryName($projectPath)
             $projectOutputFolder  = [System.IO.Path]::Combine($projectFolder, "bin", $buildConfig, $targetFramework)
@@ -240,12 +244,9 @@ Log-DebugLine "-----------------------------------------------------------------
 
 Log-DebugLine "START TEST: $projectPath/$targetFramework"
             # dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --output $projectOutputFolder --results-directory $projectResultsFolder | Out-Null
-            $testLog = dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --output $projectOutputFolder --results-directory $projectResultsFolder | Out-String
+dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --output $projectOutputFolder --results-directory $projectResultsFolder 2>&1 | Out-String >> C:\temp\log.txt
             $success = $? -and $success
 Log-DebugLine "END TEST:   success: $success"
-Log-DebugLine "-------------------------------------------------------------------------------"
-Log-DebugLine "TEST LOG:"
-Log-DebugLine $testLog.ToString()
         }
     }
 
