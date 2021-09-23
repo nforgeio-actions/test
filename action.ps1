@@ -48,6 +48,7 @@ $buildBranch      = Get-ActionInput "build-branch"       $false
 $buildConfig      = Get-ActionInput "build-config"       $false
 $buildCommit      = Get-ActionInput "build-commit"       $false
 $buildCommitUri   = Get-ActionInput "build-commit-uri"   $false
+$skipFrameworks   = Get-ActionInput "skip-frameworks"    $false
 $testFilter       = Get-ActionInput "test-filter"        $false
 $resultsFolder    = Get-ActionInput "results-folder"     $true
 $issueRepo        = Get-ActionInput "issue-repo"         $false
@@ -59,6 +60,17 @@ $issueAppendLabel = Get-ActionInput "issue-append-label" $false
 if ($buildConfig -ne "release")
 {
     $buildConfig = "debug"
+}
+
+# Convert $skipFrameworks into a hash table keyed by framework.  We'' use this
+# below to determine whether to skip tests for specific frameworks.
+
+$skipFrameworksList = $skipFrameworks.Split(' ', [System.StringSplitOptions]::TrimEntries -bor [System.StringSplitOptions]::RemoveEmptyEntries)
+$skipFrameworks     = @{}
+
+foreach ($item in $skipFrameworksList)
+{
+    $skipFrameworks.Add($item, $true)
 }
 
 Log-DebugLine "==============================================================================="
@@ -229,10 +241,11 @@ try
 
         foreach ($targetFramework in $targetFrameworks)
         {
-if ($targetFramework -eq "net48")
-{
-    continue
-}
+            if ($skipFrameworks.ContainsKey($targetFramework))
+            {
+Log-DebugLine "Skipping framework: $targetFramework"
+                continue
+            }
 Log-DebugLine "-------------------------------------------------------------------------------"
             $projectFolder        = [System.IO.Path]::GetDirectoryName($projectPath)
             $projectOutputFolder  = [System.IO.Path]::Combine($projectFolder, "bin", $buildConfig, $targetFramework)

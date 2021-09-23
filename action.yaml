@@ -38,6 +38,10 @@ inputs:
   build-commit-uri:
     description: "Optionally specifies target repo commit URI"
     required: false
+  skip-frameworks:
+    description: "Optionally specifies target frameworks to avoid testing (space separated)"
+    required: false
+    default: ""
   test-filter:
     description: "Optionally specifies a test filter"
     required: false
