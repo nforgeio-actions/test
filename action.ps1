@@ -73,11 +73,6 @@ foreach ($item in $skipFrameworksList)
     $skipFrameworks.Add($item, $true)
 }
 
-Log-DebugLine "==============================================================================="
-Log-DebugLine "REPO: $repo"
-Log-DebugLine "==============================================================================="
-Log-DebugLine ""
-
 try
 {
     if ([System.String]::IsNullOrEmpty($ncRoot) -or ![System.IO.Directory]::Exists($ncRoot))
@@ -243,10 +238,9 @@ try
         {
             if ($skipFrameworks.ContainsKey($targetFramework))
             {
-Log-DebugLine "Skipping framework: $targetFramework"
                 continue
             }
-Log-DebugLine "-------------------------------------------------------------------------------"
+
             $projectFolder        = [System.IO.Path]::GetDirectoryName($projectPath)
             $projectOutputFolder  = [System.IO.Path]::Combine($projectFolder, "bin", $buildConfig, $targetFramework)
             $projectResultsFolder = [System.IO.Path]::Combine($projectFolder, "TestResults", $targetFramework)
@@ -255,11 +249,8 @@ Log-DebugLine "-----------------------------------------------------------------
 
             [System.IO.Directory]::CreateDirectory($projectResultsFolder)
 
-Log-DebugLine "START TEST: $projectPath/$targetFramework"
-            # dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --output $projectOutputFolder --results-directory $projectResultsFolder | Out-Null
-dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --output $projectOutputFolder --results-directory $projectResultsFolder --verbosity detailed *>> C:\Temp\log.txt
+            dotnet test $projectPath --logger liquid.md --no-restore --framework $targetFramework --configuration $buildConfig --filter `"$testFilter`" --output $projectOutputFolder --results-directory $projectResultsFolder | Out-Null
             $success = $? -and $success
-Log-DebugLine "END TEST:   success: $success"
         }
     }
 
