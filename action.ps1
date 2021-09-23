@@ -229,7 +229,7 @@ try
 
         foreach ($targetFramework in $targetFrameworks)
         {
-if ($targetFramework -ne "net48")
+if ($targetFramework -eq "net48")
 {
     continue
 }
