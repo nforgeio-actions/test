@@ -320,7 +320,7 @@ try
         RenameAndCopy $projectPath
     }
 
-    # We're using the [nforgeio/artifacts] repo to hold the test results so
+    # We're using the [nforgeio/neon-artifacts] repo to hold the test results so
     # we can include result links in notifications.  The nice thing about using
     # a GitHub repo for this is that GitHub will handle the markdown translation
     # automatically and GitHub also handles security.  Test results are persisted
@@ -339,16 +339,16 @@ try
 
     if ([System.String]::IsNullOrEmpty($naRoot) -or ![System.IO.Directory]::Exists($naRoot))
     {
-        throw "[artifacts] repo is not configured locally."
+        throw "[neon-artifacts] repo is not configured locally."
     }
 
-    # Ensure that the [test] folder exists in the [artifacts] repo.
+    # Ensure that the [test] folder exists in the [neon-artifacts] repo.
 
     [System.IO.Directory]::CreateDirectory($testArchiveFolder) | Out-Null
 
     Push-Cwd $naRoot | Out-Null
 
-        # Pull the [artifacts] repo
+        # Pull the [neon-artifacts] repo
 
         Invoke-CaptureStreams "git reset --quiet --hard" | Out-Null
         Invoke-CaptureStreams "git fetch --quiet" | Out-Null
@@ -367,7 +367,7 @@ try
 
         $sortedResultPaths = $($sortedResultPaths | Sort-Object)
 
-        # Copy the project test results into the [test] folder in the [artifacts] repo,
+        # Copy the project test results into the [test] folder in the [neon-artifacts] repo,
         # renaming the files to be like: 
         #
         #       yyyy-MM-ddTHH_mm_ssZ-PROJECTNAME.FRAMEWORK.md
@@ -411,7 +411,7 @@ try
             # [$resultMarkdownUris] and [$resultInfo] will be returned as outputs to be consumed by
             # subsequent [nforgeio-actions/teams-notify-test] step.  [result-uris] will be set to
             # the semicolon list of markdown formatted URIs to the test results as the well appear
-            # in the [nforgeio/artifacts] repo.
+            # in the [nforgeio/neon-artifacts] repo.
             #
             # [result-info] will return as a semicolon separated list of summaries with the
             # same order as [result-uris].  Each summary holds the total number of tests, failures, 
@@ -425,8 +425,8 @@ try
                 $resultInfo         += ";"
             }
 
-            $resultMarkdownUris += "[details](https://github.com/nforgeio/artifacts/blob/master/test/$timestamp-$projectName-$framework.md)"
-            $resultHtmlUris     += "<a href=`"https://github.com/nforgeio/artifacts/blob/master/test/$timestamp-$projectName-$framework.md`">details</a>"
+            $resultMarkdownUris += "[details](https://github.com/nforgeio/neon-artifacts/blob/master/test/$timestamp-$projectName-$framework.md)"
+            $resultHtmlUris     += "<a href=`"https://github.com/nforgeio/neon-artifacts/blob/master/test/$timestamp-$projectName-$framework.md`">details</a>"
 
             # $hack(jefflill):
             #
@@ -483,7 +483,7 @@ try
             $resultInfo += "$projectName,$totalTests,$errorTests,$skipTests,$elapsed,$framework"
         }
 
-        # Commit and push any [artifacts] repo changes.
+        # Commit and push any [neon-artifacts] repo changes.
 
         if ($sortedResultPaths.Length -gt 0)
         {
